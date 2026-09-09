@@ -70,112 +70,172 @@
                 </div>
             </div>
 
-            <!-- NOVO MÓDULO EXCLUSIVO: IDADE BIOLÓGICA HUMANA & LINHA DO TEMPO DE VIDA -->
-            <div class="card p-4 p-md-5 mb-4 border-teal" style="border-left: 5px solid #0d9488;">
-                <div class="d-flex align-items-center gap-3 mb-4">
-                    <div class="rounded-circle p-3" style="background-color: #ccfbf1; color: #0d9488;">
-                        <i class="bi bi-person-bounding-box fs-2"></i>
+            <!-- NOVO MÓDULO REDESENHADO: IDADE BIOLÓGICA & LONGEVIDADE -->
+            <div class="card border-0 shadow-sm mb-4 overflow-hidden" style="border-radius: 1.5rem;">
+                
+                <!-- HEADER DA SEÇÃO -->
+                <div class="p-4 bg-white border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background: #ccfbf1; color: #0f766e;">
+                            <i class="bi bi-clock-history fs-3"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <h4 class="fw-bold text-dark mb-0">Idade Biológica & Longevidade do Pet</h4>
+                                <span class="badge bg-teal-subtle text-teal fw-bold px-2 py-1 rounded-pill" style="background-color: #ccfbf1; color: #0f766e; font-size: 0.72rem;">CÁLCULO POR PORTE</span>
+                            </div>
+                            <small class="text-muted">Comparativo científico entre o tempo cronológico e o envelhecimento celular equivalente.</small>
+                        </div>
                     </div>
-                    <div>
-                        <span class="badge bg-teal-subtle text-teal fw-bold mb-1" style="background-color: #ccfbf1; color: #0d9488;">MÉTRICA CIENTÍFICA EPIGENÉTICA</span>
-                        <h4 class="fw-bold text-dark mb-0">Idade Biológica vs. Cronológica do Pet</h4>
-                        <p class="text-muted small mb-0">Cálculo proporcional ponderado por espécie e porte físico do animal.</p>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge text-white px-3 py-2 rounded-pill fw-bold" th:classappend="${protocolo.estagioBadgeClass}" th:text="${protocolo.estagioVida}">ADULTO MADURO</span>
                     </div>
                 </div>
 
-                <div class="row g-4 mb-4">
-                    <!-- Idade Real do Pet -->
-                    <div class="col-md-6 col-lg-4">
-                        <div class="p-4 rounded-4 bg-light text-center border h-100">
-                            <i class="bi bi-hourglass-split text-primary fs-2 mb-2"></i>
-                            <div class="text-muted small fw-semibold text-uppercase">Idade Cronológica Pet</div>
-                            <div class="display-5 fw-bold text-dark my-1">
-                                <span th:text="${protocolo.idadeAnos}">4</span> <small class="fs-5 text-muted">anos</small>
+                <!-- CARDS COMPARATIVOS DE IDADE (DESIGN LIMPO & EQUILIBRADO) -->
+                <div class="p-4 p-md-5" style="background: #f8fafc;">
+                    <div class="row g-4 align-items-stretch">
+                        
+                        <!-- CARD 1: IDADE REAL DO PET -->
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card h-100 p-4 border-0 shadow-sm text-center bg-white" style="border-radius: 1.25rem;">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 48px; height: 48px; background: #e0f2fe; color: #0284c7;">
+                                    <i class="bi bi-hourglass-split fs-4"></i>
+                                </div>
+                                <span class="text-uppercase text-muted fw-bold small" style="letter-spacing: 0.5px; font-size: 0.75rem;">Idade Cronológica Pet</span>
+                                
+                                <div class="my-2">
+                                    <span class="display-4 fw-extrabold text-dark" style="font-weight: 800;" th:text="${protocolo.idadeAnos}">5</span>
+                                    <span class="fs-4 fw-bold text-secondary">anos</span>
+                                </div>
+                                
+                                <div class="text-muted small fw-medium mt-auto pt-2 border-top">
+                                    <i class="bi bi-calendar-event me-1"></i> Mais <strong th:text="${protocolo.idadeMesesRestantes}">3</strong> meses de vida
+                                </div>
                             </div>
-                            <span class="text-muted small" th:text="${protocolo.idadeMesesRestantes} + ' meses'">2 meses</span>
                         </div>
-                    </div>
 
-                    <!-- Idade Humana Equivalente -->
-                    <div class="col-md-6 col-lg-4">
-                        <div class="p-4 rounded-4 bg-teal-subtle text-center border h-100" style="background: linear-gradient(135deg, #ccfbf1 0%, #e0f2fe 100%); border-color: #99f6e4 !important;">
-                            <i class="bi bi-person-heart text-teal fs-2 mb-2" style="color: #0d9488;"></i>
-                            <div class="text-teal-dark small fw-bold text-uppercase" style="color: #0f766e;">Idade Humana Equivalente</div>
-                            <div class="display-5 fw-bold my-1" style="color: #0f766e;">
-                                ~<span th:text="${protocolo.idadeHumanaEquivalente}">36</span> <small class="fs-5">anos humanos</small>
+                        <!-- CARD 2: IDADE HUMANA EQUIVALENTE (DESTAQUE VISUAL PRINCIPAL) -->
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card h-100 p-4 border-2 shadow-sm text-center position-relative overflow-hidden" 
+                                 style="border-radius: 1.25rem; background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%); border-color: #14b8a6 !important;">
+                                
+                                <div class="position-absolute top-0 end-0 bg-teal text-white px-3 py-1 fw-bold" style="background-color: #0d9488; font-size: 0.68rem; border-bottom-left-radius: 0.75rem;">
+                                    EQUIVALÊNCIA
+                                </div>
+
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mx-auto mb-3" style="width: 48px; height: 48px; background: #ccfbf1; color: #0f766e;">
+                                    <i class="bi bi-person-heart fs-4"></i>
+                                </div>
+                                <span class="text-uppercase fw-bold small" style="color: #0f766e; letter-spacing: 0.5px; font-size: 0.75rem;">Idade Humana Equivalente</span>
+                                
+                                <div class="my-2">
+                                    <span class="fs-2 text-teal fw-bold" style="color: #0d9488;">~</span>
+                                    <span class="display-4 fw-extrabold" style="color: #0f766e; font-weight: 800;" th:text="${protocolo.idadeHumanaEquivalente}">45</span>
+                                    <span class="fs-4 fw-bold" style="color: #0f766e;">anos</span>
+                                </div>
+                                
+                                <div class="mt-auto pt-2 border-top">
+                                    <span class="badge text-white px-3 py-1 rounded-pill" th:classappend="${protocolo.estagioBadgeClass}" th:text="${protocolo.estagioVida}">ADULTO MADURO</span>
+                                </div>
                             </div>
-                            <span class="badge text-white" th:classappend="${protocolo.estagioBadgeClass}" th:text="${protocolo.estagioVida}">ADULTO MADURO</span>
                         </div>
-                    </div>
 
-                    <!-- Resumo do Estágio e Expectativa -->
-                    <div class="col-md-12 col-lg-4">
-                        <div class="p-4 rounded-4 bg-light border h-100 d-flex flex-column justify-content-center">
-                            <div class="d-flex justify-content-between align-items-center mb-1 small fw-bold">
-                                <span>Expectativa Média da Raça:</span>
-                                <span th:text="${pet.raca.expectativaVida} + ' anos'">12 anos</span>
+                        <!-- CARD 3: EXPECTATIVA DE VIDA E JORNADA -->
+                        <div class="col-lg-4 col-md-12">
+                            <div class="card h-100 p-4 border-0 shadow-sm bg-white" style="border-radius: 1.25rem;">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-uppercase text-muted fw-bold small" style="letter-spacing: 0.5px; font-size: 0.75rem;">Ciclo de Vida da Raça</span>
+                                    <span class="badge bg-light text-dark border fw-bold" th:text="${pet.raca.expectativaVida} + ' anos médios'">12 anos médios</span>
+                                </div>
+
+                                <div class="my-2">
+                                    <div class="d-flex justify-content-between align-items-baseline mb-1">
+                                        <span class="small text-muted">Jornada percorrida:</span>
+                                        <span class="fw-bold text-dark" th:text="${protocolo.percentualExpectativaVida} + '%'">42%</span>
+                                    </div>
+                                    <div class="progress" style="height: 10px; border-radius: 9999px;">
+                                        <div class="progress-bar" role="progressbar" 
+                                             th:style="'width: ' + ${protocolo.percentualExpectativaVida} + '%; background: linear-gradient(90deg, #0d9488, #14b8a6);'" 
+                                             th:aria-valuenow="${protocolo.percentualExpectativaVida}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+
+                                <div class="p-2 rounded-3 bg-light text-secondary mt-auto small" style="font-size: 0.8rem; line-height: 1.35;">
+                                    <i class="bi bi-info-circle text-teal me-1" style="color: #0d9488;"></i>
+                                    <span th:text="${protocolo.descricaoEstagio}">Fase de monitoramento e prevenção.</span>
+                                </div>
                             </div>
-                            <div class="progress mb-2" style="height: 10px;">
-                                <div class="progress-bar bg-teal" role="progressbar" 
-                                     th:style="'width: ' + ${protocolo.percentualExpectativaVida} + '%; background-color: #0d9488;'" 
-                                     th:aria-valuenow="${protocolo.percentualExpectativaVida}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- PROTOCOLOS CLÍNICOS ORGANIZADOS EM ABAS OU CARDS DISTINTOS -->
+                <div class="p-4 p-md-5 bg-white border-top">
+                    <h5 class="fw-bold text-dark mb-4 d-flex align-items-center gap-2">
+                        <i class="bi bi-shield-check text-teal" style="color: #0d9488;"></i>
+                        Protocolo Preventivo Recomendado para a Idade Atual
+                    </h5>
+
+                    <div class="row g-4">
+                        <!-- Vacinas -->
+                        <div class="col-lg-4">
+                            <div class="card h-100 p-4 border rounded-4 bg-light shadow-none">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <div class="rounded-circle p-2 bg-primary-subtle text-primary">
+                                        <i class="bi bi-shield-shaded fs-5"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-0 text-dark">Vacinas & Imunização</h6>
+                                </div>
+                                <ul class="list-unstyled mb-0 small">
+                                    <li th:each="vacina : ${protocolo.vacinasRecomendadas}" class="mb-2 d-flex align-items-start gap-2">
+                                        <i class="bi bi-check-circle-fill text-success mt-1" style="font-size: 0.85rem;"></i>
+                                        <span class="text-secondary" th:text="${vacina}">Reforço Anual Polivalente V10</span>
+                                    </li>
+                                </ul>
                             </div>
-                            <small class="text-muted mb-2" th:text="${protocolo.percentualExpectativaVida} + '% do ciclo médio de vida percorrido.'"></small>
-                            <p class="small text-secondary mb-0 fw-medium" th:text="${protocolo.descricaoEstagio}"></p>
+                        </div>
+
+                        <!-- Exames -->
+                        <div class="col-lg-4">
+                            <div class="card h-100 p-4 border rounded-4 bg-light shadow-none">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <div class="rounded-circle p-2 bg-danger-subtle text-danger">
+                                        <i class="bi bi-clipboard2-pulse fs-5"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-0 text-dark">Check-ups & Exames</h6>
+                                </div>
+                                <ul class="list-unstyled mb-0 small">
+                                    <li th:each="exame : ${protocolo.examesPreventivos}" class="mb-2 d-flex align-items-start gap-2">
+                                        <i class="bi bi-arrow-right-circle-fill text-teal mt-1" style="color: #0d9488; font-size: 0.85rem;"></i>
+                                        <span class="text-secondary" th:text="${exame}">Hemograma anual</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Nutrição & Suplementos -->
+                        <div class="col-lg-4">
+                            <div class="card h-100 p-4 border rounded-4 bg-light shadow-none">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <div class="rounded-circle p-2 bg-warning-subtle text-warning">
+                                        <i class="bi bi-capsule-pill fs-5"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-0 text-dark">Nutrição & Suplementos</h6>
+                                </div>
+                                <ul class="list-unstyled mb-0 small">
+                                    <li th:each="nutri : ${protocolo.nutricaoESuplementos}" class="mb-2 d-flex align-items-start gap-2">
+                                        <i class="bi bi-heart-fill text-danger mt-1" style="font-size: 0.75rem;"></i>
+                                        <span class="text-secondary" th:text="${nutri}">Ômega-3</span>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- CARDS DE PROTOCOLO DE CUIDADOS POR IDADE -->
-                <div class="row g-4">
-                    <!-- Vacinas Recomendadas para a Idade -->
-                    <div class="col-lg-4">
-                        <div class="card h-100 p-4 border-0 shadow-sm bg-light">
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <i class="bi bi-shield-shaded text-primary fs-4"></i>
-                                <h6 class="fw-bold mb-0 text-dark">Vacinas para esta Fase</h6>
-                            </div>
-                            <ul class="list-unstyled mb-0 small">
-                                <li th:each="vacina : ${protocolo.vacinasRecomendadas}" class="mb-2 d-flex align-items-start gap-2">
-                                    <i class="bi bi-check2-circle text-success mt-1"></i>
-                                    <span th:text="${vacina}">Reforço Anual V10</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Exames Preventivos por Idade -->
-                    <div class="col-lg-4">
-                        <div class="card h-100 p-4 border-0 shadow-sm bg-light">
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <i class="bi bi-clipboard2-pulse text-danger fs-4"></i>
-                                <h6 class="fw-bold mb-0 text-dark">Check-ups & Exames Ideais</h6>
-                            </div>
-                            <ul class="list-unstyled mb-0 small">
-                                <li th:each="exame : ${protocolo.examesPreventivos}" class="mb-2 d-flex align-items-start gap-2">
-                                    <i class="bi bi-arrow-right-circle-fill text-teal mt-1" style="color: #0d9488;"></i>
-                                    <span th:text="${exame}">Hemograma anual</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Nutrição e Suplementos de Longevidade -->
-                    <div class="col-lg-4">
-                        <div class="card h-100 p-4 border-0 shadow-sm bg-light">
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <i class="bi bi-capsule-pill text-warning fs-4"></i>
-                                <h6 class="fw-bold mb-0 text-dark">Nutrição & Suplementos</h6>
-                            </div>
-                            <ul class="list-unstyled mb-0 small">
-                                <li th:each="nutri : ${protocolo.nutricaoESuplementos}" class="mb-2 d-flex align-items-start gap-2">
-                                    <i class="bi bi-heart-fill text-danger mt-1" style="font-size: 0.75rem;"></i>
-                                    <span th:text="${nutri}">Ômega-3</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- LINHA DO TEMPO CLÍNICA & BADGES -->
