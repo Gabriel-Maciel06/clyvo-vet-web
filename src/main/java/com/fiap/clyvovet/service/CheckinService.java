@@ -53,6 +53,74 @@ public class CheckinService {
         return badgeRepository.findByPetIdOrderByDataConquistaDesc(petId);
     }
 
+    public List<com.fiap.clyvovet.dto.BadgeItemDto> obterGaleriaDeBadgesCompletas(Pet pet) {
+        List<BadgeConquista> conquistadas = badgeRepository.findByPetIdOrderByDataConquistaDesc(pet.getId());
+        long totalCheckins = checkinRepository.countByPetId(pet.getId());
+        RecompensaTutor recompensa = obterOuCriarRecompensa(pet.getTutor().getCpf());
+        int streakAtual = recompensa.getStreakDias();
+
+        List<com.fiap.clyvovet.dto.BadgeItemDto> galeria = new java.util.ArrayList<>();
+
+        // 1. Primeiro Passo
+        boolean has1 = conquistadas.stream().anyMatch(b -> b.getCodigoBadge().equalsIgnoreCase("PRIMEIRO_PASSO") || b.getCodigoBadge().equalsIgnoreCase("STREAK_5"));
+        LocalDate data1 = conquistadas.stream().filter(b -> b.getCodigoBadge().equalsIgnoreCase("PRIMEIRO_PASSO") || b.getCodigoBadge().equalsIgnoreCase("STREAK_5")).findFirst().map(BadgeConquista::getDataConquista).orElse(null);
+        galeria.add(new com.fiap.clyvovet.dto.BadgeItemDto(
+                "PRIMEIRO_PASSO", "Primeiro Passo", "bi-award-fill",
+                "Completou o 1º check-in de saúde e longevidade na plataforma Clyvo Vet.",
+                totalCheckins >= 1 || has1, data1 != null ? data1 : LocalDate.now(),
+                (int) Math.min(1, Math.max(1, totalCheckins)), 1, "Complete 1 check-in diário"
+        ));
+
+        // 2. Guardião Fiel (Streak 5 dias)
+        boolean hasStreak5 = conquistadas.stream().anyMatch(b -> b.getCodigoBadge().equalsIgnoreCase("STREAK_5") || b.getCodigoBadge().equalsIgnoreCase("TUTOR_DEDICADO"));
+        LocalDate dataStreak5 = conquistadas.stream().filter(b -> b.getCodigoBadge().equalsIgnoreCase("STREAK_5")).findFirst().map(BadgeConquista::getDataConquista).orElse(null);
+        galeria.add(new com.fiap.clyvovet.dto.BadgeItemDto(
+                "STREAK_5", "Guardião Fiel (5 Dias)", "bi-fire",
+                "Manteve uma sequência consecutiva de 5 dias de check-in de rotina.",
+                streakAtual >= 5 || hasStreak5, dataStreak5 != null ? dataStreak5 : LocalDate.now().minusDays(1),
+                Math.min(5, Math.max(streakAtual, hasStreak5 ? 5 : 0)), 5, "Mantenha 5 dias consecutivos de check-in"
+        ));
+
+        // 3. Atleta Canino (Vida Ativa)
+        boolean hasAtleta = conquistadas.stream().anyMatch(b -> b.getCodigoBadge().equalsIgnoreCase("VIDA_ATIVA"));
+        LocalDate dataAtleta = conquistadas.stream().filter(b -> b.getCodigoBadge().equalsIgnoreCase("VIDA_ATIVA")).findFirst().map(BadgeConquista::getDataConquista).orElse(null);
+        galeria.add(new com.fiap.clyvovet.dto.BadgeItemDto(
+                "VIDA_ATIVA", "Atleta Canino", "bi-lightning-charge-fill",
+                "Acumulou mais de 45 minutos diários de caminhadas e exercícios ativos.",
+                hasAtleta, dataAtleta,
+                hasAtleta ? 45 : 30, 45, "Registre 45 min de atividade física em um check-in"
+        ));
+
+        // 4. Semana de Ouro (7 dias de streak)
+        boolean hasSemana7 = streakAtual >= 7;
+        galeria.add(new com.fiap.clyvovet.dto.BadgeItemDto(
+                "SEMANA_OURO", "Semana de Ouro", "bi-trophy-fill",
+                "Completou 7 dias seguidos monitorando dieta, humor e medicação.",
+                hasSemana7, null,
+                Math.min(7, streakAtual), 7, "Atingir 7 dias seguidos de streak (Atualmente: " + streakAtual + "/7)"
+        ));
+
+        // 5. Mestre da Nutrição (10 check-ins com alimentação balanceada)
+        boolean hasNutri = totalCheckins >= 10;
+        galeria.add(new com.fiap.clyvovet.dto.BadgeItemDto(
+                "MESTRE_NUTRICAO", "Mestre da Nutrição", "bi-heart-pulse-fill",
+                "Acompanhou com rigor a alimentação recomendada por 10 dias.",
+                hasNutri, null,
+                (int) Math.min(10, totalCheckins), 10, "Registrar 10 check-ins de alimentação saudável (Atualmente: " + totalCheckins + "/10)"
+        ));
+
+        // 6. Guardião da Longevidade (Check-up preventivo com escore > 90)
+        boolean hasEscore90 = pet.getEscoreSaude() != null && pet.getEscoreSaude() >= 90;
+        galeria.add(new com.fiap.clyvovet.dto.BadgeItemDto(
+                "GUARDIAO_LONGEVIDADE", "Guardião da Longevidade", "bi-shield-check",
+                "Concluiu a triagem clínica com Escore de Longevidade superior a 90 pontos!",
+                hasEscore90, LocalDate.now().minusDays(8),
+                pet.getEscoreSaude() != null ? pet.getEscoreSaude() : 85, 90, "Obtenha nota clínica superior a 90/100"
+        ));
+
+        return galeria;
+    }
+
     @Transactional
     public CheckinDiario registrarCheckin(CheckinDto dto) {
         Pet pet = petRepository.findById(dto.getPetId())

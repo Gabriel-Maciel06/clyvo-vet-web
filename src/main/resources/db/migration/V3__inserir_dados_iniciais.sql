@@ -54,5 +54,10 @@ INSERT INTO T_CONSULTA_TRIAGEM (pet_id, data_solicitacao, data_consulta, status,
 
 -- 10. Histórico Clínico Consolidado
 INSERT INTO T_HISTORICO_CLINICO (pet_id, data_registro, tipo_evento, descricao, conduta_adotada) VALUES
-(1, CURRENT_TIMESTAMP - INTERVAL '8' DAY, 'TRIAGEM_PREVENTIVA', 'Triagem de longevidade concluída com escore 92/100.', 'Prescrito protocolo de suplementação ômega-3 e natação preventiva.'),
-(2, CURRENT_TIMESTAMP - INTERVAL '1' DAY, 'ALERTA_SAUDE', 'Alerta gerado no check-in diário: respiração ofegante.', 'Encaminhado para consulta presencial com especialista.');
+(1, CURRENT_TIMESTAMP - INTERVAL '1' DAY, 'CHECKIN_DIARIO', 'Check-in diário realizado: Humor Enérgico, Dieta Recomendada, Atividade 50 min.', 'Parâmetros diários dentro da normalidade de prevenção e longevidade. +20 pts de fidelidade acumulados.'),
+(1, CURRENT_TIMESTAMP - INTERVAL '8' DAY, 'TRIAGEM_PREVENTIVA', 'Triagem de longevidade concluída com escore 92/100.', 'Prescrito protocolo de suplementação ômega-3 e natação preventiva pelo Dr. Carlos Mendes.'),
+(1, CURRENT_TIMESTAMP - INTERVAL '30' DAY, 'CADASTRO_PET', 'Pet cadastrado no ecossistema Clyvo Vet.', 'Início do plano contínuo de longevidade e monitoramento de saúde.'),
+(2, CURRENT_TIMESTAMP - INTERVAL '1' DAY, 'ALERTA_SAUDE', 'Alerta gerado no check-in diário: respiração ofegante ao subir escadas.', 'ALERTA CLÍNICO: Notificação automática emitida ao Hospital Veterinário Clyvo Central. Indicada triagem respiratória emergencial.'),
+(2, CURRENT_TIMESTAMP - INTERVAL '2' DAY, 'CHECKIN_DIARIO', 'Check-in diário realizado: Humor Tranquilo, Petiscos moderados, Atividade 20 min.', 'Parâmetros diários estáveis. Tutor orientado sobre controle de calor e hidratação.'),
+(2, CURRENT_TIMESTAMP - INTERVAL '20' DAY, 'CADASTRO_PET', 'Pet cadastrado no ecossistema Clyvo Vet.', 'Início do acompanhamento profilático para Buldogue Francês.');
+

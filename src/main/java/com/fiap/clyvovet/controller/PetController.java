@@ -1,5 +1,6 @@
 package com.fiap.clyvovet.controller;
 
+import com.fiap.clyvovet.dto.BadgeItemDto;
 import com.fiap.clyvovet.dto.PetDto;
 import com.fiap.clyvovet.model.BadgeConquista;
 import com.fiap.clyvovet.model.CheckinDiario;
@@ -88,10 +89,12 @@ public class PetController {
         List<ConsultaTriagem> triagens = triagemService.listarPorPet(petId);
         List<HistoricoClinico> timeline = historicoClinicoRepository.findByPetIdOrderByDataRegistroDesc(petId);
         com.fiap.clyvovet.dto.ProtocoloLongevidadeDto protocolo = longevidadeService.calcularProtocolo(pet);
+        List<BadgeItemDto> galeriaBadges = checkinService.obterGaleriaDeBadgesCompletas(pet);
 
         model.addAttribute("pet", pet);
         model.addAttribute("checkins", checkins);
         model.addAttribute("badges", badges);
+        model.addAttribute("galeriaBadges", galeriaBadges);
         model.addAttribute("triagens", triagens);
         model.addAttribute("timeline", timeline);
         model.addAttribute("protocolo", protocolo);

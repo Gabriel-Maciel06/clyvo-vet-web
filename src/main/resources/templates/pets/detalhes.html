@@ -238,63 +238,478 @@
 
             </div>
 
-            <!-- LINHA DO TEMPO CLÍNICA & BADGES -->
-            <div class="row g-4">
-                <!-- Badges e Conquistas do Pet -->
-                <div class="col-lg-4">
-                    <div class="card p-4 mb-4">
-                        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-award-fill text-warning me-2"></i>Badges de Longevidade</h5>
-                        <div class="row g-2">
-                            <div th:each="badge : ${badges}" class="col-12">
-                                <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-3 border">
-                                    <i class="bi fs-2 text-warning" th:classappend="${badge.icone}"></i>
+            <!-- ================================================================= -->
+            <!-- SEÇÃO 1: GALERIA DE CONQUISTAS & METAS DE LONGEVIDADE (GAMIFICAÇÃO) -->
+            <!-- ================================================================= -->
+            <div class="card border-0 shadow-sm mb-5 overflow-hidden" style="border-radius: 1.5rem;">
+                
+                <!-- HEADER DA GALERIA -->
+                <div class="p-4 bg-white border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle p-3 d-flex align-items-center justify-content-center shadow-sm" 
+                             style="width: 54px; height: 54px; background: linear-gradient(135deg, #fef3c7, #fde68a); color: #b45309;">
+                            <i class="bi bi-trophy-fill fs-3"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <h4 class="fw-bold text-dark mb-0">Galeria de Conquistas & Gamificação</h4>
+                                <span class="badge bg-warning-subtle text-warning-emphasis fw-bold px-2 py-1 rounded-pill" style="font-size: 0.72rem;">
+                                    RECOMPENSA & LONGEVIDADE
+                                </span>
+                            </div>
+                            <small class="text-muted">Acompanhe as insígnias desbloqueadas e o progresso em tempo real das próximas metas de cuidado.</small>
+                        </div>
+                    </div>
+
+                    <!-- PROGRESSO GLOBAL DE CONQUISTAS -->
+                    <div class="d-flex align-items-center gap-3 bg-light p-2 px-3 rounded-4 border">
+                        <div>
+                            <div class="small fw-bold text-dark text-end">
+                                <span th:text="${badges != null ? badges.size() : 0}">2</span> de <span th:text="${galeriaBadges != null ? galeriaBadges.size() : 6}">6</span> Desbloqueadas
+                            </div>
+                            <div class="progress mt-1" style="width: 140px; height: 8px; border-radius: 9999px;">
+                                <div class="progress-bar" role="progressbar"
+                                     th:style="'width: ' + ${badges != null && galeriaBadges != null && galeriaBadges.size() > 0 ? (badges.size() * 100 / galeriaBadges.size()) : 0} + '%; background: linear-gradient(90deg, #f59e0b, #10b981);'"
+                                     th:aria-valuenow="${badges != null && galeriaBadges != null && galeriaBadges.size() > 0 ? (badges.size() * 100 / galeriaBadges.size()) : 0}" 
+                                     aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <i class="bi bi-award fs-3 text-warning"></i>
+                    </div>
+                </div>
+
+                <!-- GRID DE CONQUISTAS (ESTILO APPLE FITNESS / PSN / STEAM) -->
+                <div class="p-4 p-md-5" style="background: #f8fafc;">
+                    <div class="row g-4 align-items-stretch">
+                        
+                        <div th:each="badgeItem : ${galeriaBadges}" class="col-xl-4 col-md-6">
+                            
+                            <!-- CARD DESBLOQUEADO -->
+                            <div th:if="${badgeItem.desbloqueado}" 
+                                 class="card h-100 p-4 border-0 shadow-sm position-relative overflow-hidden" 
+                                 style="border-radius: 1.25rem; background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%); border: 1.5px solid #fde68a !important;">
+                                
+                                <div class="position-absolute top-0 end-0 bg-warning text-dark px-3 py-1 fw-bold" style="font-size: 0.7rem; border-bottom-left-radius: 0.75rem;">
+                                    <i class="bi bi-patch-check-fill me-1"></i> DESBLOQUEADA
+                                </div>
+
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <div class="rounded-4 p-3 d-flex align-items-center justify-content-center shadow" 
+                                         style="width: 60px; height: 60px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">
+                                        <i class="bi fs-2" th:classappend="${badgeItem.icone}"></i>
+                                    </div>
                                     <div>
-                                        <div class="fw-bold small text-dark" th:text="${badge.nomeBadge}">Primeiro Passo</div>
-                                        <small class="text-muted d-block" th:text="${badge.descricao}">Completou checkin</small>
+                                        <h6 class="fw-bold text-dark mb-0 fs-6" th:text="${badgeItem.nome}">Primeiro Passo</h6>
+                                        <small class="text-success fw-semibold" th:if="${badgeItem.dataConquista != null}">
+                                            <i class="bi bi-calendar-check me-1"></i> Conquistada em <span th:text="${#temporals.format(badgeItem.dataConquista, 'dd/MM/yyyy')}">01/01/2026</span>
+                                        </small>
+                                        <small class="text-success fw-semibold" th:if="${badgeItem.dataConquista == null}">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Ativa no Perfil
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <p class="small text-secondary mb-3 flex-grow-1" th:text="${badgeItem.descricao}">
+                                    Completou o primeiro check-in de cuidados preventivos.
+                                </p>
+
+                                <div class="mt-auto pt-2 border-top">
+                                    <div class="d-flex justify-content-between align-items-center small mb-1">
+                                        <span class="text-muted fw-semibold">Status da Meta:</span>
+                                        <span class="text-warning-emphasis fw-bold">100% Completa</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px; border-radius: 9999px;">
+                                        <div class="progress-bar bg-warning" style="width: 100%;"></div>
                                     </div>
                                 </div>
                             </div>
-                            <div th:if="${#lists.isEmpty(badges)}" class="col-12 text-center text-muted py-3 small">
-                                Nenhuma conquista ainda. Faça check-ins diários para desbloquear!
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Card Genética e Raça -->
-                    <div class="card p-4 bg-light">
-                        <h6 class="fw-bold text-dark mb-2"><i class="bi bi-dna me-2 text-teal" style="color: #0d9488;"></i>Predisposição Genética</h6>
-                        <p class="small text-secondary mb-2" th:text="'Doenças comuns: ' + ${pet.raca.propensaoDoenca}"></p>
-                        <p class="small text-secondary mb-0" th:text="'Cuidados especiais: ' + ${pet.raca.cuidadosEspeciais}"></p>
-                    </div>
-                </div>
-
-                <!-- Histórico e Prontuário Consolidado -->
-                <div class="col-lg-8">
-                    <div class="card p-4">
-                        <h5 class="fw-bold text-dark mb-4">
-                            <i class="bi bi-clock-history text-teal me-2" style="color: #0d9488;"></i>
-                            Linha do Tempo Clínica & Cuidado Contínuo
-                        </h5>
-
-                        <div class="timeline">
-                            <div th:each="evento : ${timeline}" class="timeline-item">
-                                <div class="timeline-badge" th:classappend="${evento.tipoEvento == 'ALERTA_SAUDE' ? 'bg-danger' : (evento.tipoEvento == 'TRIAGEM_PREVENTIVA' ? 'bg-primary' : 'bg-success')}"></div>
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <span class="badge" th:classappend="${evento.tipoEvento == 'ALERTA_SAUDE' ? 'bg-danger' : (evento.tipoEvento == 'TRIAGEM_PREVENTIVA' ? 'bg-primary' : 'bg-success')}" th:text="${evento.tipoEvento}">CHECKIN_DIARIO</span>
-                                    <small class="text-muted" th:text="${#temporals.format(evento.dataRegistro, 'dd/MM/yyyy HH:mm')}">01/01/2026 12:00</small>
+                            <!-- CARD BLOQUEADO (EM PROGRESSO COM DICA E BARRA AO VIVO) -->
+                            <div th:unless="${badgeItem.desbloqueado}" 
+                                 class="card h-100 p-4 shadow-none position-relative overflow-hidden" 
+                                 style="border-radius: 1.25rem; background: #ffffff; border: 1.5px dashed #cbd5e1 !important; opacity: 0.92;">
+                                
+                                <div class="position-absolute top-0 end-0 bg-light text-muted border-start border-bottom px-3 py-1 fw-bold" style="font-size: 0.7rem; border-bottom-left-radius: 0.75rem;">
+                                    <i class="bi bi-lock-fill me-1"></i> BLOQUEADA
                                 </div>
-                                <p class="fw-semibold text-dark mb-1 small" th:text="${evento.descricao}">Descrição</p>
-                                <p class="text-secondary small mb-0" th:if="${evento.condutaAdotada}" th:text="${evento.condutaAdotada}">Conduta</p>
+
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <div class="rounded-4 p-3 d-flex align-items-center justify-content-center" 
+                                         style="width: 60px; height: 60px; background: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0;">
+                                        <i class="bi fs-2" th:classappend="${badgeItem.icone}"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold text-secondary mb-0 fs-6" th:text="${badgeItem.nome}">Semana de Ouro</h6>
+                                        <small class="text-muted">
+                                            <i class="bi bi-hourglass-split me-1"></i> Em andamento
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <p class="small text-muted mb-3 flex-grow-1" th:text="${badgeItem.descricao}">
+                                    Completar 7 dias seguidos de monitoramento diário.
+                                </p>
+
+                                <div class="p-2 rounded-3 bg-light border text-muted small mb-3" style="font-size: 0.78rem;">
+                                    <i class="bi bi-lightbulb-fill text-warning me-1"></i>
+                                    <span th:text="${badgeItem.dicaProgresso}">Mantenha a frequência de check-in diário.</span>
+                                </div>
+
+                                <div class="mt-auto pt-2 border-top">
+                                    <div class="d-flex justify-content-between align-items-center small mb-1">
+                                        <span class="text-muted fw-semibold">Progresso Atual:</span>
+                                        <span class="text-dark fw-bold">
+                                            <span th:text="${badgeItem.progressoAtual}">0</span> / <span th:text="${badgeItem.progressoTotal}">7</span>
+                                            (<span th:text="${badgeItem.percentual}">0</span>%)
+                                        </span>
+                                    </div>
+                                    <div class="progress" style="height: 6px; border-radius: 9999px;">
+                                        <div class="progress-bar bg-teal" role="progressbar" 
+                                             th:style="'width: ' + ${badgeItem.percentual} + '%; background-color: #0d9488;'" 
+                                             th:aria-valuenow="${badgeItem.percentual}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div th:if="${#lists.isEmpty(timeline)}" class="text-center text-muted py-5">
-                                <i class="bi bi-journal-x fs-2 d-block mb-2"></i>
-                                <p class="small mb-0">Nenhum registro clínico na linha do tempo ainda.</p>
-                            </div>
                         </div>
+
                     </div>
                 </div>
+
             </div>
+
+            <!-- ================================================================= -->
+            <!-- SEÇÃO 2: LINHA DO TEMPO CLÍNICA & PRONTUÁRIO INTEGRADO             -->
+            <!-- ================================================================= -->
+            <div class="card border-0 shadow-sm mb-5 overflow-hidden" style="border-radius: 1.5rem;">
+                
+                <!-- HEADER DA TIMELINE E FILTROS INTERATIVOS -->
+                <div class="p-4 bg-white border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle p-3 d-flex align-items-center justify-content-center shadow-sm" 
+                             style="width: 54px; height: 54px; background: #ccfbf1; color: #0f766e;">
+                            <i class="bi bi-clock-history fs-3"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <h4 class="fw-bold text-dark mb-0">Linha do Tempo Clínica & Cuidado Contínuo</h4>
+                                <span class="badge bg-teal-subtle text-teal fw-bold px-2 py-1 rounded-pill" style="background-color: #ccfbf1; color: #0f766e; font-size: 0.72rem;">
+                                    FEED EM TEMPO REAL
+                                </span>
+                            </div>
+                            <small class="text-muted">Histórico unificado de check-ins do tutor, triagens preventivas com IA e alertas emitidos.</small>
+                        </div>
+                    </div>
+
+                    <!-- BOTÕES DE FILTRO RÁPIDO (TODOS, CHECKINS, TRIAGENS, ALERTAS) -->
+                    <div class="btn-group p-1 bg-light rounded-pill border" role="group" id="timelineFilters">
+                        <button type="button" class="btn btn-sm btn-white rounded-pill px-3 fw-bold active-filter" onclick="filterTimeline('all', this)">
+                            Todos (<span th:text="${timeline != null ? timeline.size() : 0}">3</span>)
+                        </button>
+                        <button type="button" class="btn btn-sm btn-light rounded-pill px-3 text-secondary fw-semibold" onclick="filterTimeline('CHECKIN_DIARIO', this)">
+                            <i class="bi bi-calendar-check text-teal me-1"></i> Check-ins
+                        </button>
+                        <button type="button" class="btn btn-sm btn-light rounded-pill px-3 text-secondary fw-semibold" onclick="filterTimeline('TRIAGEM_PREVENTIVA', this)">
+                            <i class="bi bi-hospital text-primary me-1"></i> Triagens
+                        </button>
+                        <button type="button" class="btn btn-sm btn-light rounded-pill px-3 text-secondary fw-semibold" onclick="filterTimeline('ALERTA_SAUDE', this)">
+                            <i class="bi bi-exclamation-triangle-fill text-danger me-1"></i> Alertas
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CORPO DA TIMELINE RICA -->
+                <div class="p-4 p-md-5" style="background: #f8fafc;">
+                    
+                    <div class="row g-4">
+                        
+                        <!-- FEED CRONOLÓGICO DE EVENTOS CLÍNICOS -->
+                        <div class="col-lg-8">
+                            
+                            <div class="timeline-container">
+                                
+                                <!-- LISTA DE EVENTOS -->
+                                <div th:each="evento : ${timeline}" 
+                                     class="timeline-card-wrapper mb-4" 
+                                     th:attr="data-tipo=${evento.tipoEvento}">
+
+                                    <!-- 1. EVENTO: ALERTA DE SAÚDE (DESTAQUE VERMELHO / EMERGÊNCIA) -->
+                                    <div th:if="${evento.tipoEvento == 'ALERTA_SAUDE'}" 
+                                         class="card border-0 shadow-sm overflow-hidden" 
+                                         style="border-radius: 1.25rem; border-left: 6px solid #ef4444 !important; background: #ffffff;">
+                                        
+                                        <div class="p-4">
+                                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="badge bg-danger text-white px-3 py-1.5 rounded-pill fw-bold">
+                                                        <i class="bi bi-exclamation-triangle-fill me-1"></i> ALERTA CLÍNICO EMITIDO
+                                                    </span>
+                                                    <span class="badge bg-danger-subtle text-danger fw-bold rounded-pill px-2.5 py-1">Atenção Imediata</span>
+                                                </div>
+                                                <span class="small text-muted fw-semibold">
+                                                    <i class="bi bi-clock me-1"></i> <span th:text="${#temporals.format(evento.dataRegistro, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:30</span>
+                                                </span>
+                                            </div>
+
+                                            <h6 class="fw-bold text-danger mb-2 fs-6">Sintoma Anormal Identificado no Check-in</h6>
+                                            <p class="text-dark mb-3 fw-medium" th:text="${evento.descricao}">
+                                                Alerta gerado no check-in diário: respiração ofegante ao subir escadas.
+                                            </p>
+
+                                            <!-- CAIXA DE CONDUTA / PLANO DE AÇÃO -->
+                                            <div class="p-3 rounded-3 bg-danger-subtle border border-danger-subtle text-danger-emphasis small mb-3">
+                                                <div class="d-flex align-items-start gap-2">
+                                                    <i class="bi bi-shield-exclamation fs-5 flex-shrink-0 mt-0"></i>
+                                                    <div>
+                                                        <strong>Conduta e Procedimento Adotado:</strong>
+                                                        <div th:text="${evento.condutaAdotada}">Notificação imediata enviada ao hospital veterinário parceiro.</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pt-2 border-top">
+                                                <small class="text-muted">
+                                                    <i class="bi bi-broadcast text-danger me-1"></i> Protocolo de tele-orientação e aviso ao tutor acionado
+                                                </small>
+                                                <a th:href="'https://wa.me/5511987654321?text=Ol%C3%A1%2C+preciso+de+ajuda+com+o+alerta+cl%C3%ADnico+do+meu+pet+' + ${pet.nome}" 
+                                                   target="_blank" 
+                                                   class="btn btn-sm btn-danger rounded-pill px-3 fw-bold d-inline-flex align-items-center gap-1 shadow-sm">
+                                                    <i class="bi bi-whatsapp"></i> Falar com Plantão Veterinário
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 2. EVENTO: TRIAGEM PREVENTIVA / PARECER MÉDICO (AZUL / CLÍNICO) -->
+                                    <div th:if="${evento.tipoEvento == 'TRIAGEM_PREVENTIVA'}" 
+                                         class="card border-0 shadow-sm overflow-hidden" 
+                                         style="border-radius: 1.25rem; border-left: 6px solid #0284c7 !important; background: #ffffff;">
+                                        
+                                        <div class="p-4">
+                                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="badge bg-primary text-white px-3 py-1.5 rounded-pill fw-bold">
+                                                        <i class="bi bi-hospital-fill me-1"></i> TRIAGEM PREVENTIVA VETERINÁRIA
+                                                    </span>
+                                                    <span class="badge bg-primary-subtle text-primary fw-bold rounded-pill px-2.5 py-1">Parecer Clínico</span>
+                                                </div>
+                                                <span class="small text-muted fw-semibold">
+                                                    <i class="bi bi-clock me-1"></i> <span th:text="${#temporals.format(evento.dataRegistro, 'dd/MM/yyyy HH:mm')}">01/01/2026 14:00</span>
+                                                </span>
+                                            </div>
+
+                                            <h6 class="fw-bold text-primary mb-2 fs-6">Avaliação de Longevidade & Parâmetros Fisiológicos</h6>
+                                            <p class="text-dark mb-3 fw-medium" th:text="${evento.descricao}">
+                                                Triagem de longevidade concluída com escore 92/100.
+                                            </p>
+
+                                            <!-- SINAIS VITAIS / RESUMO MÉDICO -->
+                                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                                <span class="badge bg-light text-dark border px-3 py-2 rounded-3">
+                                                    <i class="bi bi-heart-pulse-fill text-danger me-1"></i> Escore: <strong>92/100</strong>
+                                                </span>
+                                                <span class="badge bg-light text-dark border px-3 py-2 rounded-3">
+                                                    <i class="bi bi-shield-check text-success me-1"></i> Risco: <strong>Baixo</strong>
+                                                </span>
+                                                <span class="badge bg-light text-dark border px-3 py-2 rounded-3">
+                                                    <i class="bi bi-person-badge text-teal me-1" style="color: #0d9488;"></i> Veterinário: <strong>Dr. Carlos Mendes</strong>
+                                                </span>
+                                            </div>
+
+                                            <!-- CONDUTA MÉDICA / PRESCRIÇÃO -->
+                                            <div class="p-3 rounded-3 bg-primary-subtle border border-primary-subtle text-primary-emphasis small mb-3">
+                                                <div class="d-flex align-items-start gap-2">
+                                                    <i class="bi bi-clipboard2-pulse fs-5 flex-shrink-0 mt-0"></i>
+                                                    <div>
+                                                        <strong>Conduta e Prescrição Médica:</strong>
+                                                        <div th:text="${evento.condutaAdotada}">Prescrito protocolo de suplementação ômega-3 e acompanhamento.</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                                                <small class="text-muted">
+                                                    <i class="bi bi-check-circle-fill text-success me-1"></i> Prontuário validado com certificação veterinária
+                                                </small>
+                                                <span class="badge bg-light text-secondary border">Status: Concluída</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 3. EVENTO: CHECK-IN DIÁRIO DO TUTOR (TEAL / BEM-ESTAR) -->
+                                    <div th:if="${evento.tipoEvento == 'CHECKIN_DIARIO'}" 
+                                         class="card border-0 shadow-sm overflow-hidden" 
+                                         style="border-radius: 1.25rem; border-left: 6px solid #0d9488 !important; background: #ffffff;">
+                                        
+                                        <div class="p-4">
+                                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="badge text-white px-3 py-1.5 rounded-pill fw-bold" style="background-color: #0d9488;">
+                                                        <i class="bi bi-calendar-check-fill me-1"></i> CHECK-IN DIÁRIO DO TUTOR
+                                                    </span>
+                                                    <span class="badge bg-teal-subtle text-teal fw-bold rounded-pill px-2.5 py-1" style="background-color: #ccfbf1; color: #0f766e;">
+                                                        Rotina Saudável
+                                                    </span>
+                                                </div>
+                                                <span class="small text-muted fw-semibold">
+                                                    <i class="bi bi-clock me-1"></i> <span th:text="${#temporals.format(evento.dataRegistro, 'dd/MM/yyyy HH:mm')}">01/01/2026 09:15</span>
+                                                </span>
+                                            </div>
+
+                                            <h6 class="fw-bold text-dark mb-2 fs-6">Acompanhamento Diário de Comportamento & Alimentação</h6>
+                                            <p class="text-secondary mb-3 small" th:text="${evento.descricao}">
+                                                Check-in diário realizado: Humor Enérgico, Dieta Recomendada, Atividade 50 min.
+                                            </p>
+
+                                            <!-- PARÂMETROS REGISTRADOS EM BADGES DESTAQUE -->
+                                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                                <span class="badge bg-light text-dark border px-3 py-2 rounded-3">
+                                                    <i class="bi bi-capsule-pill text-primary me-1"></i> Medicação: <strong class="text-success">Em dia</strong>
+                                                </span>
+                                                <span class="badge bg-light text-dark border px-3 py-2 rounded-3">
+                                                    <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Atividade: <strong>Exercício Ativo</strong>
+                                                </span>
+                                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-2 rounded-3 fw-bold">
+                                                    <i class="bi bi-star-fill text-warning me-1"></i> +20 Pts de Fidelidade
+                                                </span>
+                                            </div>
+
+                                            <div class="p-3 rounded-3 bg-light border text-secondary small">
+                                                <i class="bi bi-check-circle text-teal me-1" style="color: #0d9488;"></i>
+                                                <span th:text="${evento.condutaAdotada}">Parâmetros dentro da normalidade de prevenção e bem-estar.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 4. EVENTO: CADASTRO DO PET / BOAS-VINDAS (ÍNDIGO / INÍCIO) -->
+                                    <div th:if="${evento.tipoEvento == 'CADASTRO_PET'}" 
+                                         class="card border-0 shadow-sm overflow-hidden" 
+                                         style="border-radius: 1.25rem; border-left: 6px solid #6366f1 !important; background: #ffffff;">
+                                        
+                                        <div class="p-4">
+                                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                                                <span class="badge text-white px-3 py-1.5 rounded-pill fw-bold" style="background-color: #6366f1;">
+                                                    <i class="bi bi-stars me-1"></i> INÍCIO DA JORNADA CLYVO VET
+                                                </span>
+                                                <span class="small text-muted fw-semibold">
+                                                    <i class="bi bi-clock me-1"></i> <span th:text="${#temporals.format(evento.dataRegistro, 'dd/MM/yyyy HH:mm')}">01/01/2026</span>
+                                                </span>
+                                            </div>
+                                            <h6 class="fw-bold text-dark mt-2 mb-1" th:text="${evento.descricao}">Pet cadastrado na Clyvo Vet</h6>
+                                            <p class="small text-muted mb-0" th:text="${evento.condutaAdotada}">Início do plano contínuo de longevidade.</p>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <!-- SE NÃO HOUVER NENHUM EVENTO -->
+                                <div th:if="${#lists.isEmpty(timeline)}" class="card p-5 text-center bg-white border-0 shadow-sm rounded-4">
+                                    <div class="rounded-circle p-3 mx-auto mb-3" style="width: 60px; height: 60px; background: #f1f5f9; color: #94a3b8;">
+                                        <i class="bi bi-journal-x fs-2"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark">Nenhum evento clínico registrado ainda</h6>
+                                    <p class="small text-muted mb-3">Realize o primeiro check-in diário para começar a construir a linha do tempo do seu pet!</p>
+                                    <div>
+                                        <a th:href="@{/checkin/novo(petId=${pet.id})}" class="btn btn-clyvo rounded-pill px-4">
+                                            <i class="bi bi-calendar-check-fill me-1"></i> Fazer Check-in Agora
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- COLUNA LATERAL DE APOIO: GENÉTICA & HISTÓRICO DE CONSULTAS -->
+                        <div class="col-lg-4">
+                            
+                            <!-- CARD: GENÉTICA & CUIDADOS DA RAÇA -->
+                            <div class="card p-4 border-0 shadow-sm mb-4 bg-white" style="border-radius: 1.25rem;">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <div class="rounded-circle p-2 bg-teal-subtle text-teal" style="background-color: #ccfbf1; color: #0f766e;">
+                                        <i class="bi bi-dna fs-5"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark mb-0">Predisposição da Raça</h6>
+                                </div>
+                                <div class="mb-3">
+                                    <span class="text-uppercase text-muted fw-bold small" style="font-size: 0.72rem;">Doenças Frequentes:</span>
+                                    <p class="small text-dark fw-medium mt-1 mb-0" th:text="${pet.raca.propensaoDoenca}">
+                                        Displasia coxofemoral e cardiopatias.
+                                    </p>
+                                </div>
+                                <div class="border-top pt-3">
+                                    <span class="text-uppercase text-muted fw-bold small" style="font-size: 0.72rem;">Cuidados Preventivos:</span>
+                                    <p class="small text-secondary mt-1 mb-0" th:text="${pet.raca.cuidadosEspeciais}">
+                                        Controle rigoroso de peso e atividade física moderada.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- CARD: CONSULTAS & TRIAGENS CADASTRADAS -->
+                            <div class="card p-4 border-0 shadow-sm bg-white" style="border-radius: 1.25rem;">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="rounded-circle p-2 bg-primary-subtle text-primary">
+                                            <i class="bi bi-calendar2-heart fs-5"></i>
+                                        </div>
+                                        <h6 class="fw-bold text-dark mb-0">Consultas Médicas</h6>
+                                    </div>
+                                    <a th:href="@{/triagens/nova(petId=${pet.id})}" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-0.5 small" sec:authorize="hasRole('TUTOR')">
+                                        + Solicitar
+                                    </a>
+                                </div>
+
+                                <div th:if="${not #lists.isEmpty(triagens)}">
+                                    <div th:each="t : ${triagens}" class="p-3 mb-2 bg-light rounded-3 border">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="badge" th:classappend="${t.status.name() == 'CONCLUIDA' ? 'bg-success' : 'bg-warning text-dark'}" th:text="${t.status.descricao}">Concluída</span>
+                                            <small class="text-muted" th:text="${#temporals.format(t.dataSolicitacao, 'dd/MM/yyyy')}">01/01/2026</small>
+                                        </div>
+                                        <p class="small text-dark fw-semibold mb-1" th:text="${t.queixaPrincipal}">Queixa principal</p>
+                                        <div class="small text-muted" th:if="${t.veterinario != null}">
+                                            <i class="bi bi-person-check text-primary me-1"></i> <span th:text="${t.veterinario.nomeCompleto}">Dr. Carlos Mendes</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div th:if="${#lists.isEmpty(triagens)}" class="text-center text-muted py-3 small">
+                                    Nenhuma triagem formal agendada no momento.
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SCRIPT DE FILTRAGEM INSTANTÂNEA DA TIMELINE -->
+    <script>
+        function filterTimeline(tipo, btn) {
+            // Atualiza o estado ativo dos botões
+            document.querySelectorAll('#timelineFilters button').forEach(b => {
+                b.classList.remove('btn-white', 'active-filter', 'fw-bold');
+                b.classList.add('btn-light', 'text-secondary', 'fw-semibold');
+            });
+            btn.classList.remove('btn-light', 'text-secondary', 'fw-semibold');
+            btn.classList.add('btn-white', 'active-filter', 'fw-bold');
+
+            // Filtra os cards
+            const cards = document.querySelectorAll('.timeline-card-wrapper');
+            cards.forEach(card => {
+                const cardTipo = card.getAttribute('data-tipo');
+                if (tipo === 'all' || cardTipo === tipo) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+
 
         </div>
     </div>
