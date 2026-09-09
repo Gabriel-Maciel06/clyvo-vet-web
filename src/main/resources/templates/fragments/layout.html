@@ -256,6 +256,23 @@
             .app-wrapper { flex-direction: column; }
             .sidebar { width: 100%; }
         }
+        @media (max-width: 768px) {
+            .topbar {
+                height: auto;
+                min-height: 56px;
+                padding: 0.6rem 1rem;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            .main-content {
+                width: 100%;
+                overflow-x: hidden;
+            }
+            main.container-fluid {
+                padding-left: 0.85rem !important;
+                padding-right: 0.85rem !important;
+            }
+        }
     </style>
 </head>
 <body>
