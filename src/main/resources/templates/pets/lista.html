@@ -3,57 +3,57 @@
 <head th:replace="~{fragments/layout :: head('Meus Pets')}"></head>
 <body>
 
-    <header th:replace="~{fragments/layout :: navbar}"></header>
-    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div th:replace="~{fragments/layout :: appShell('pets', ~{::#mainSection})}">
+        <div id="mainSection">
 
-    <main class="container py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2 class="fw-bold text-dark mb-0">Pets Acompanhados</h2>
-                <p class="text-muted small">Gerencie os pets, visualize o prontuário de longevidade e agende cuidados.</p>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold text-dark mb-0">Pets Acompanhados</h2>
+                    <p class="text-muted small">Gerencie o perfil, acesse a carteirinha digital, calcule a idade humana e veja o histórico preventivo.</p>
+                </div>
+                <a th:href="@{/pets/novo}" class="btn btn-clyvo rounded-pill px-4">
+                    <i class="bi bi-plus-lg me-1"></i> Cadastrar Pet
+                </a>
             </div>
-            <a th:href="@{/pets/novo}" class="btn btn-clyvo">
-                <i class="bi bi-plus-lg me-1"></i> Cadastrar Pet
-            </a>
-        </div>
 
-        <div class="row g-4">
-            <div th:each="pet : ${pets}" class="col-md-6 col-lg-4">
-                <div class="card h-100 p-4">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="rounded-circle bg-teal-subtle d-flex align-items-center justify-content-center overflow-hidden border" style="width: 70px; height: 70px; background-color: #ccfbf1;">
-                            <i class="bi bi-gitlab fs-1" style="color: #0d9488;"></i>
+            <div class="row g-4">
+                <div th:each="pet : ${pets}" class="col-md-6 col-lg-4">
+                    <div class="card h-100 p-4 border-0 shadow-sm">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="rounded-4 p-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; background-color: #ccfbf1; color: #0d9488;">
+                                <i class="bi bi-gitlab fs-1"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0 text-dark" th:text="${pet.nome}">Thor</h4>
+                                <span class="badge bg-light text-secondary border" th:text="${pet.raca.nome}">Golden Retriever</span>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="fw-bold mb-0 text-dark" th:text="${pet.nome}">Thor</h4>
-                            <span class="badge bg-light text-dark border" th:text="${pet.raca.nome}">Golden Retriever</span>
+
+                        <ul class="list-unstyled small text-secondary mb-4">
+                            <li class="mb-2"><i class="bi bi-calendar3 me-2 text-teal" style="color: #0d9488;"></i><strong>Idade Cronológica:</strong> <span th:text="${pet.idadeAnos}">4</span> anos</li>
+                            <li class="mb-2"><i class="bi bi-speedometer2 me-2 text-teal" style="color: #0d9488;"></i><strong>Peso Atual:</strong> <span th:text="${pet.peso}">31.5</span> kg</li>
+                            <li class="mb-2"><i class="bi bi-person me-2 text-teal" style="color: #0d9488;"></i><strong>Tutor:</strong> <span th:text="${pet.tutor.nome}">Gabriel Maciel</span></li>
+                            <li><i class="bi bi-activity me-2 text-teal" style="color: #0d9488;"></i><strong>Escore de Saúde:</strong> <span class="fw-bold text-teal" th:text="${pet.escoreSaude} + '/100'">85/100</span></li>
+                        </ul>
+
+                        <div class="mt-auto d-grid gap-2">
+                            <a th:href="@{/pets/{id}(id=${pet.id})}" class="btn btn-clyvo-outline rounded-pill">
+                                <i class="bi bi-person-bounding-box me-1"></i> Protocolo de Longevidade
+                            </a>
+                            <a th:href="@{/checkin/novo(petId=${pet.id})}" class="btn btn-clyvo rounded-pill" sec:authorize="hasRole('TUTOR')">
+                                <i class="bi bi-check-circle-fill me-1"></i> Check-in Diário
+                            </a>
                         </div>
                     </div>
+                </div>
 
-                    <ul class="list-unstyled small text-secondary mb-4">
-                        <li class="mb-1"><i class="bi bi-calendar3 me-2 text-teal"></i><strong>Idade:</strong> <span th:text="${pet.idadeAnos}">4</span> anos</li>
-                        <li class="mb-1"><i class="bi bi-speedometer2 me-2 text-teal"></i><strong>Peso:</strong> <span th:text="${pet.peso}">31.5</span> kg</li>
-                        <li class="mb-1"><i class="bi bi-person me-2 text-teal"></i><strong>Tutor:</strong> <span th:text="${pet.tutor.nome}">Gabriel Maciel</span></li>
-                        <li><i class="bi bi-activity me-2 text-teal"></i><strong>Status:</strong> <span th:text="${pet.statusLongevidade}">Ativo</span></li>
-                    </ul>
-
-                    <div class="mt-auto d-grid gap-2">
-                        <a th:href="@{/pets/{id}(id=${pet.id})}" class="btn btn-clyvo-outline">
-                            <i class="bi bi-eye-fill me-1"></i> Ver Linha do Tempo & Prontuário
-                        </a>
-                        <a th:href="@{/checkin/novo(petId=${pet.id})}" class="btn btn-clyvo" sec:authorize="hasRole('TUTOR')">
-                            <i class="bi bi-check-circle me-1"></i> Check-in Diário
-                        </a>
-                    </div>
+                <div th:if="${#lists.isEmpty(pets)}" class="col-12 text-center py-5">
+                    <p class="text-muted">Nenhum pet encontrado.</p>
                 </div>
             </div>
 
-            <div th:if="${#lists.isEmpty(pets)}" class="col-12 text-center py-5">
-                <p class="text-muted">Nenhum pet encontrado.</p>
-            </div>
         </div>
-    </main>
+    </div>
 
-    <footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 </html>

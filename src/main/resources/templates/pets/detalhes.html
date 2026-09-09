@@ -1,120 +1,243 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="~{fragments/layout :: head(${pet.nome} + ' - Prontuário & Linha do Tempo')}"></head>
+<head th:replace="~{fragments/layout :: head(${pet.nome} + ' - Protocolo de Longevidade')}"></head>
 <body>
 
-    <header th:replace="~{fragments/layout :: navbar}"></header>
-    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div th:replace="~{fragments/layout :: appShell('pets', ~{::#mainSection})}">
+        <div id="mainSection">
 
-    <main class="container py-4">
-        <!-- Header do Pet -->
-        <div class="card p-4 mb-4">
-            <div class="row align-items-center">
-                <div class="col-md-8 d-flex align-items-center gap-4">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center border" style="width: 85px; height: 85px; background-color: #ccfbf1;">
-                        <i class="bi bi-gitlab display-5" style="color: #0d9488;"></i>
+            <!-- BREADCRUMB E AÇÕES -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-1 small">
+                            <li class="breadcrumb-item"><a th:href="@{/dashboard}" class="text-decoration-none text-muted">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/pets}" class="text-decoration-none text-muted">Meus Pets</a></li>
+                            <li class="breadcrumb-item active text-teal fw-bold" aria-current="page" th:text="${pet.nome}">Thor</li>
+                        </ol>
+                    </nav>
+                    <h2 class="fw-bold text-dark mb-0">Prontuário & Longevidade Pet</h2>
+                </div>
+
+                <div class="d-flex gap-2 mt-3 mt-md-0">
+                    <!-- BOTÃO WHATSAPP DA CLÍNICA COM MENSAGEM INTELIGENTE -->
+                    <a th:href="'https://wa.me/5511987654321?text=' + ${protocolo.mensagemWhatsApp}" 
+                       target="_blank" 
+                       class="btn btn-success rounded-pill px-3 fw-bold d-flex align-items-center gap-2 shadow-sm">
+                        <i class="bi bi-whatsapp fs-5"></i> Agendar no WhatsApp
+                    </a>
+
+                    <a th:href="@{/checkin/novo(petId=${pet.id})}" class="btn btn-clyvo rounded-pill px-4" sec:authorize="hasRole('TUTOR')">
+                        <i class="bi bi-calendar-check-fill me-1"></i> Fazer Check-in
+                    </a>
+                </div>
+            </div>
+
+            <!-- CARTEIRINHA DIGITAL E HEADER DO PET -->
+            <div class="card p-4 mb-4 overflow-hidden border-0 shadow-sm" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white;">
+                <div class="row align-items-center">
+                    <div class="col-lg-8 d-flex align-items-center gap-4">
+                        <div class="rounded-4 p-3 d-flex align-items-center justify-content-center shadow" style="width: 95px; height: 95px; background: linear-gradient(135deg, #0d9488, #14b8a6);">
+                            <i class="bi bi-gitlab display-4 text-white"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <h2 class="fw-bold mb-0 text-white" th:text="${pet.nome}">Thor</h2>
+                                <span class="badge bg-light text-dark fw-bold px-3 py-1 rounded-pill" th:text="${pet.raca.especie}">CANINA</span>
+                                <span class="badge text-white px-3 py-1 rounded-pill" th:classappend="${protocolo.estagioBadgeClass}" th:text="${protocolo.estagioVida}">ADULTO MADURO</span>
+                            </div>
+                            <p class="text-white-50 mb-2">
+                                <span class="text-white fw-semibold" th:text="${pet.raca.nome}">Golden Retriever</span> • 
+                                Peso Aferido: <span class="text-white fw-semibold" th:text="${pet.peso} + ' kg'">31.5 kg</span> • 
+                                Tutor: <span class="text-white fw-semibold" th:text="${pet.tutor.nome}">Gabriel Maciel</span>
+                            </p>
+                            <small class="text-white-50 d-flex align-items-center gap-3">
+                                <span><i class="bi bi-calendar3 me-1"></i> Nasc: <span th:text="${#temporals.format(pet.dataNascimento, 'dd/MM/yyyy')}">01/01/2022</span></span>
+                                <span><i class="bi bi-qr-code me-1"></i> ID Clyvo: #000<span th:text="${pet.id}">1</span></span>
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 text-center text-lg-end mt-4 mt-lg-0">
+                        <div class="d-inline-flex flex-column bg-white bg-opacity-10 p-3 rounded-4 backdrop-blur border border-white border-opacity-10 text-center" style="min-width: 200px;">
+                            <span class="text-white-50 small text-uppercase fw-bold">Escore de Longevidade</span>
+                            <div class="display-6 fw-bold my-1" th:classappend="${pet.escoreSaude >= 80 ? 'text-teal' : (pet.escoreSaude >= 50 ? 'text-warning' : 'text-danger')}" style="color: #2dd4bf;" th:text="${pet.escoreSaude} + '/100'">
+                                85/100
+                            </div>
+                            <span class="badge bg-success-subtle text-success small" th:text="${pet.statusLongevidade}">Acompanhamento Ativo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOVO MÓDULO EXCLUSIVO: IDADE BIOLÓGICA HUMANA & LINHA DO TEMPO DE VIDA -->
+            <div class="card p-4 p-md-5 mb-4 border-teal" style="border-left: 5px solid #0d9488;">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="rounded-circle p-3" style="background-color: #ccfbf1; color: #0d9488;">
+                        <i class="bi bi-person-bounding-box fs-2"></i>
                     </div>
                     <div>
-                        <div class="d-flex align-items-center gap-2">
-                            <h2 class="fw-bold mb-0 text-dark" th:text="${pet.nome}">Thor</h2>
-                            <span class="badge bg-dark" th:text="${pet.raca.especie}">CANINA</span>
-                        </div>
-                        <p class="text-muted mb-1">
-                            Raça: <strong th:text="${pet.raca.nome}">Golden Retriever</strong> • 
-                            Idade: <strong th:text="${pet.idadeAnos}">4</strong> anos • 
-                            Peso: <strong th:text="${pet.peso}">31.5</strong> kg
-                        </p>
-                        <small class="text-secondary">
-                            <i class="bi bi-person-heart me-1"></i> Tutor(a): <span th:text="${pet.tutor.nome}">Gabriel Maciel</span>
-                            <span class="ms-2"><i class="bi bi-whatsapp text-success me-1"></i> <span th:text="${pet.tutor.telefone}">(11) 98765-4321</span></span>
-                        </small>
+                        <span class="badge bg-teal-subtle text-teal fw-bold mb-1" style="background-color: #ccfbf1; color: #0d9488;">MÉTRICA CIENTÍFICA EPIGENÉTICA</span>
+                        <h4 class="fw-bold text-dark mb-0">Idade Biológica vs. Cronológica do Pet</h4>
+                        <p class="text-muted small mb-0">Cálculo proporcional ponderado por espécie e porte físico do animal.</p>
                     </div>
                 </div>
 
-                <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                    <div class="d-inline-block text-center p-3 bg-light rounded-4 border">
-                        <small class="text-muted d-block fw-semibold">Escore de Longevidade</small>
-                        <div class="display-6 fw-bold" th:classappend="${pet.escoreSaude >= 80 ? 'text-success' : (pet.escoreSaude >= 50 ? 'text-warning' : 'text-danger')}" th:text="${pet.escoreSaude} + '/100'">
-                            85/100
+                <div class="row g-4 mb-4">
+                    <!-- Idade Real do Pet -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="p-4 rounded-4 bg-light text-center border h-100">
+                            <i class="bi bi-hourglass-split text-primary fs-2 mb-2"></i>
+                            <div class="text-muted small fw-semibold text-uppercase">Idade Cronológica Pet</div>
+                            <div class="display-5 fw-bold text-dark my-1">
+                                <span th:text="${protocolo.idadeAnos}">4</span> <small class="fs-5 text-muted">anos</small>
+                            </div>
+                            <span class="text-muted small" th:text="${protocolo.idadeMesesRestantes} + ' meses'">2 meses</span>
                         </div>
-                        <span class="badge bg-teal-subtle text-teal" style="color: #0d9488; background-color: #ccfbf1;" th:text="${pet.statusLongevidade}">Saudável</span>
+                    </div>
+
+                    <!-- Idade Humana Equivalente -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="p-4 rounded-4 bg-teal-subtle text-center border h-100" style="background: linear-gradient(135deg, #ccfbf1 0%, #e0f2fe 100%); border-color: #99f6e4 !important;">
+                            <i class="bi bi-person-heart text-teal fs-2 mb-2" style="color: #0d9488;"></i>
+                            <div class="text-teal-dark small fw-bold text-uppercase" style="color: #0f766e;">Idade Humana Equivalente</div>
+                            <div class="display-5 fw-bold my-1" style="color: #0f766e;">
+                                ~<span th:text="${protocolo.idadeHumanaEquivalente}">36</span> <small class="fs-5">anos humanos</small>
+                            </div>
+                            <span class="badge text-white" th:classappend="${protocolo.estagioBadgeClass}" th:text="${protocolo.estagioVida}">ADULTO MADURO</span>
+                        </div>
+                    </div>
+
+                    <!-- Resumo do Estágio e Expectativa -->
+                    <div class="col-md-12 col-lg-4">
+                        <div class="p-4 rounded-4 bg-light border h-100 d-flex flex-column justify-content-center">
+                            <div class="d-flex justify-content-between align-items-center mb-1 small fw-bold">
+                                <span>Expectativa Média da Raça:</span>
+                                <span th:text="${pet.raca.expectativaVida} + ' anos'">12 anos</span>
+                            </div>
+                            <div class="progress mb-2" style="height: 10px;">
+                                <div class="progress-bar bg-teal" role="progressbar" 
+                                     th:style="'width: ' + ${protocolo.percentualExpectativaVida} + '%; background-color: #0d9488;'" 
+                                     th:aria-valuenow="${protocolo.percentualExpectativaVida}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <small class="text-muted mb-2" th:text="${protocolo.percentualExpectativaVida} + '% do ciclo médio de vida percorrido.'"></small>
+                            <p class="small text-secondary mb-0 fw-medium" th:text="${protocolo.descricaoEstagio}"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARDS DE PROTOCOLO DE CUIDADOS POR IDADE -->
+                <div class="row g-4">
+                    <!-- Vacinas Recomendadas para a Idade -->
+                    <div class="col-lg-4">
+                        <div class="card h-100 p-4 border-0 shadow-sm bg-light">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <i class="bi bi-shield-shaded text-primary fs-4"></i>
+                                <h6 class="fw-bold mb-0 text-dark">Vacinas para esta Fase</h6>
+                            </div>
+                            <ul class="list-unstyled mb-0 small">
+                                <li th:each="vacina : ${protocolo.vacinasRecomendadas}" class="mb-2 d-flex align-items-start gap-2">
+                                    <i class="bi bi-check2-circle text-success mt-1"></i>
+                                    <span th:text="${vacina}">Reforço Anual V10</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Exames Preventivos por Idade -->
+                    <div class="col-lg-4">
+                        <div class="card h-100 p-4 border-0 shadow-sm bg-light">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <i class="bi bi-clipboard2-pulse text-danger fs-4"></i>
+                                <h6 class="fw-bold mb-0 text-dark">Check-ups & Exames Ideais</h6>
+                            </div>
+                            <ul class="list-unstyled mb-0 small">
+                                <li th:each="exame : ${protocolo.examesPreventivos}" class="mb-2 d-flex align-items-start gap-2">
+                                    <i class="bi bi-arrow-right-circle-fill text-teal mt-1" style="color: #0d9488;"></i>
+                                    <span th:text="${exame}">Hemograma anual</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Nutrição e Suplementos de Longevidade -->
+                    <div class="col-lg-4">
+                        <div class="card h-100 p-4 border-0 shadow-sm bg-light">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <i class="bi bi-capsule-pill text-warning fs-4"></i>
+                                <h6 class="fw-bold mb-0 text-dark">Nutrição & Suplementos</h6>
+                            </div>
+                            <ul class="list-unstyled mb-0 small">
+                                <li th:each="nutri : ${protocolo.nutricaoESuplementos}" class="mb-2 d-flex align-items-start gap-2">
+                                    <i class="bi bi-heart-fill text-danger mt-1" style="font-size: 0.75rem;"></i>
+                                    <span th:text="${nutri}">Ômega-3</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Ações Rápidas -->
-            <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top">
-                <a th:href="@{/checkin/novo(petId=${pet.id})}" class="btn btn-clyvo rounded-pill" sec:authorize="hasRole('TUTOR')">
-                    <i class="bi bi-calendar-check me-1"></i> Realizar Check-in Diário (Fluxo 1)
-                </a>
-                <a th:href="@{/triagem/solicitar(petId=${pet.id})}" class="btn btn-clyvo-outline rounded-pill" sec:authorize="hasRole('TUTOR')">
-                    <i class="bi bi-heart-pulse me-1"></i> Solicitar Avaliação Preventiva
-                </a>
-                <a th:href="@{/triagem/fila}" class="btn btn-outline-danger rounded-pill" sec:authorize="hasRole('ADMIN')">
-                    <i class="bi bi-clipboard2-pulse me-1"></i> Avaliar na Fila Clínica (Fluxo 2)
-                </a>
-            </div>
-        </div>
-
-        <div class="row g-4">
-            <!-- Coluna Esquerda: Badges & Histórico de Check-ins -->
-            <div class="col-lg-5">
-                <!-- Badges de Longevidade Conquistadas -->
-                <div class="card p-4 mb-4">
-                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-trophy-fill text-warning me-2"></i>Badges de Longevidade</h5>
-                    <div class="row g-2">
-                        <div th:each="badge : ${badges}" class="col-12">
-                            <div class="d-flex align-items-center gap-3 p-2 bg-light rounded-3 border">
-                                <i class="bi fs-3 text-warning" th:classappend="${badge.icone}"></i>
-                                <div>
-                                    <div class="fw-bold small" th:text="${badge.nomeBadge}">Primeiro Passo</div>
-                                    <small class="text-muted d-block" th:text="${badge.descricao}">Completou checkin</small>
+            <!-- LINHA DO TEMPO CLÍNICA & BADGES -->
+            <div class="row g-4">
+                <!-- Badges e Conquistas do Pet -->
+                <div class="col-lg-4">
+                    <div class="card p-4 mb-4">
+                        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-award-fill text-warning me-2"></i>Badges de Longevidade</h5>
+                        <div class="row g-2">
+                            <div th:each="badge : ${badges}" class="col-12">
+                                <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-3 border">
+                                    <i class="bi fs-2 text-warning" th:classappend="${badge.icone}"></i>
+                                    <div>
+                                        <div class="fw-bold small text-dark" th:text="${badge.nomeBadge}">Primeiro Passo</div>
+                                        <small class="text-muted d-block" th:text="${badge.descricao}">Completou checkin</small>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div th:if="${#lists.isEmpty(badges)}" class="col-12 text-center text-muted py-3">
-                            <small>Nenhuma badge conquistada ainda. Faça check-ins para destravar!</small>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Genética & Prevenção da Raça -->
-                <div class="card p-4 mb-4 bg-light">
-                    <h6 class="fw-bold text-dark mb-2"><i class="bi bi-dna me-2 text-teal" style="color: #0d9488;"></i>Predisposição Genética da Raça</h6>
-                    <p class="small text-secondary mb-2" th:text="'Doenças comuns: ' + ${pet.raca.propensaoDoenca != null ? pet.raca.propensaoDoenca : 'Sem predisposição cadastrada'}"></p>
-                    <p class="small text-secondary mb-0" th:text="'Cuidados recomendados: ' + ${pet.raca.cuidadosEspeciais != null ? pet.raca.cuidadosEspeciais : 'Manter dieta e vacinação regular.'}"></p>
-                </div>
-            </div>
-
-            <!-- Coluna Direita: Linha do Tempo Clínica e Histórico Consolidado -->
-            <div class="col-lg-7">
-                <div class="card p-4">
-                    <h5 class="fw-bold text-dark mb-4">
-                        <i class="bi bi-clock-history text-teal me-2" style="color: #0d9488;"></i>
-                        Linha do Tempo Clínica & Cuidado Contínuo
-                    </h5>
-
-                    <div class="timeline">
-                        <div th:each="evento : ${timeline}" class="timeline-item">
-                            <div class="timeline-badge" th:classappend="${evento.tipoEvento == 'ALERTA_SAUDE' ? 'bg-danger' : (evento.tipoEvento == 'TRIAGEM_PREVENTIVA' ? 'bg-primary' : 'bg-success')}"></div>
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span class="badge" th:classappend="${evento.tipoEvento == 'ALERTA_SAUDE' ? 'bg-danger' : (evento.tipoEvento == 'TRIAGEM_PREVENTIVA' ? 'bg-primary' : 'bg-success')}" th:text="${evento.tipoEvento}">CHECKIN_DIARIO</span>
-                                <small class="text-muted" th:text="${#temporals.format(evento.dataRegistro, 'dd/MM/yyyy HH:mm')}">01/01/2026 12:00</small>
+                            <div th:if="${#lists.isEmpty(badges)}" class="col-12 text-center text-muted py-3 small">
+                                Nenhuma conquista ainda. Faça check-ins diários para desbloquear!
                             </div>
-                            <p class="fw-semibold text-dark mb-1 small" th:text="${evento.descricao}">Descrição</p>
-                            <p class="text-secondary small mb-0" th:if="${evento.condutaAdotada}" th:text="${evento.condutaAdotada}">Conduta</p>
                         </div>
+                    </div>
 
-                        <div th:if="${#lists.isEmpty(timeline)}" class="text-center text-muted py-5">
-                            <i class="bi bi-journal-x fs-2 d-block mb-2"></i>
-                            <p class="small mb-0">Nenhum registro clínico na linha do tempo ainda.</p>
+                    <!-- Card Genética e Raça -->
+                    <div class="card p-4 bg-light">
+                        <h6 class="fw-bold text-dark mb-2"><i class="bi bi-dna me-2 text-teal" style="color: #0d9488;"></i>Predisposição Genética</h6>
+                        <p class="small text-secondary mb-2" th:text="'Doenças comuns: ' + ${pet.raca.propensaoDoenca}"></p>
+                        <p class="small text-secondary mb-0" th:text="'Cuidados especiais: ' + ${pet.raca.cuidadosEspeciais}"></p>
+                    </div>
+                </div>
+
+                <!-- Histórico e Prontuário Consolidado -->
+                <div class="col-lg-8">
+                    <div class="card p-4">
+                        <h5 class="fw-bold text-dark mb-4">
+                            <i class="bi bi-clock-history text-teal me-2" style="color: #0d9488;"></i>
+                            Linha do Tempo Clínica & Cuidado Contínuo
+                        </h5>
+
+                        <div class="timeline">
+                            <div th:each="evento : ${timeline}" class="timeline-item">
+                                <div class="timeline-badge" th:classappend="${evento.tipoEvento == 'ALERTA_SAUDE' ? 'bg-danger' : (evento.tipoEvento == 'TRIAGEM_PREVENTIVA' ? 'bg-primary' : 'bg-success')}"></div>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="badge" th:classappend="${evento.tipoEvento == 'ALERTA_SAUDE' ? 'bg-danger' : (evento.tipoEvento == 'TRIAGEM_PREVENTIVA' ? 'bg-primary' : 'bg-success')}" th:text="${evento.tipoEvento}">CHECKIN_DIARIO</span>
+                                    <small class="text-muted" th:text="${#temporals.format(evento.dataRegistro, 'dd/MM/yyyy HH:mm')}">01/01/2026 12:00</small>
+                                </div>
+                                <p class="fw-semibold text-dark mb-1 small" th:text="${evento.descricao}">Descrição</p>
+                                <p class="text-secondary small mb-0" th:if="${evento.condutaAdotada}" th:text="${evento.condutaAdotada}">Conduta</p>
+                            </div>
+
+                            <div th:if="${#lists.isEmpty(timeline)}" class="text-center text-muted py-5">
+                                <i class="bi bi-journal-x fs-2 d-block mb-2"></i>
+                                <p class="small mb-0">Nenhum registro clínico na linha do tempo ainda.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
 
-    <footer th:replace="~{fragments/layout :: footer}"></footer>
+        </div>
+    </div>
+
 </body>
 </html>

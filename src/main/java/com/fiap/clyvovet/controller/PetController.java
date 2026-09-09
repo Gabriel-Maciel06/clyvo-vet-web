@@ -28,15 +28,18 @@ public class PetController {
     private final CheckinService checkinService;
     private final TriagemService triagemService;
     private final HistoricoClinicoRepository historicoClinicoRepository;
+    private final com.fiap.clyvovet.service.LongevidadeCalculadoraService longevidadeService;
 
     public PetController(PetService petService,
                          CheckinService checkinService,
                          TriagemService triagemService,
-                         HistoricoClinicoRepository historicoClinicoRepository) {
+                         HistoricoClinicoRepository historicoClinicoRepository,
+                         com.fiap.clyvovet.service.LongevidadeCalculadoraService longevidadeService) {
         this.petService = petService;
         this.checkinService = checkinService;
         this.triagemService = triagemService;
         this.historicoClinicoRepository = historicoClinicoRepository;
+        this.longevidadeService = longevidadeService;
     }
 
     @GetMapping
@@ -84,12 +87,14 @@ public class PetController {
         List<BadgeConquista> badges = checkinService.listarBadgesPorPet(petId);
         List<ConsultaTriagem> triagens = triagemService.listarPorPet(petId);
         List<HistoricoClinico> timeline = historicoClinicoRepository.findByPetIdOrderByDataRegistroDesc(petId);
+        com.fiap.clyvovet.dto.ProtocoloLongevidadeDto protocolo = longevidadeService.calcularProtocolo(pet);
 
         model.addAttribute("pet", pet);
         model.addAttribute("checkins", checkins);
         model.addAttribute("badges", badges);
         model.addAttribute("triagens", triagens);
         model.addAttribute("timeline", timeline);
+        model.addAttribute("protocolo", protocolo);
 
         return "pets/detalhes";
     }
