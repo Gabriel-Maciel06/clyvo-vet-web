@@ -24,3 +24,35 @@
 
 ### P4: Como foram evitadas as penalidades de código (SOLID, Clean Code)?
 - **Resposta:** "Seguimos rigorosamente os princípios de Clean Code: injeção de dependências estritamente por construtor, separação clara em camadas (Controller, Service, Repository, DTO, Model), isolamento das regras de negócio dentro dos Services (sem lógica pesada em controllers), uso de Bean Validation nos DTOs (`@NotNull`, `@Size`, `@DecimalMin`), sem 'God methods' e sem acoplamento indevido."
+
+### P5: Como vocês impedem que um tutor acesse ou altere o pet de outro tutor?
+- **Resposta:** "Além da proteção de rota por perfil, fazemos **validação de propriedade na camada de serviço**: `PetService.validarPropriedade(pet, username)` compara o CPF do tutor dono do pet com o tutor vinculado ao usuário logado. Ela é chamada em `PetController` (detalhes do pet, via `buscarPorIdAutorizado`), em `CheckinService.registrarCheckin` e em `TriagemService.solicitarTriagem`. Se não bater, lançamos `AccessDeniedException`, que o Spring Security converte em 403 e na página *Acesso Negado*. O veterinário (`ROLE_ADMIN`) é a exceção: pode ver qualquer pet."
+
+### P6: Onde fica a regra de níveis e descontos? Por que na entidade?
+- **Resposta:** "Em `RecompensaTutor.atualizarNivelEDesconto()` e `registrarCheckinNaData()`. Antes existia lógica duplicada no service e na entidade com limites diferentes; centralizamos na entidade (modelo rico) para haver **uma única fonte da regra**: Prata com 7 dias ou 100 pontos (10%), Ouro com 14 dias ou 250 pontos (15%), Diamante com 30 dias ou 500 pontos (20%). O `CheckinService` só orquestra: chama `registrarCheckinNaData`, `adicionarPontos` e salva."
+
+### P7: Como os erros são tratados?
+- **Resposta:** "Um `@ControllerAdvice` (`GlobalExceptionHandler`) converte `IllegalArgumentException` (registro inexistente) em página 404 amigável e qualquer erro inesperado em 500 com a mesma página `erro.html`; `AccessDeniedException` é relançada para o Spring Security renderizar o 403. Nos formulários, `BindingResult` devolve a própria tela com as mensagens do Bean Validation."
+
+### P8: Quais testes automatizados existem?
+- **Resposta:** "Doze testes de integração com `@SpringBootTest`. `ControleDeAcessoPorPerfilTest` usa MockMvc e `spring-security-test`: login público, redirecionamento para `/login`, autenticação real com BCrypt via `formLogin`, senha errada, 403 do tutor na fila médica e do veterinário no check-in. `CheckinServiceTest` cobre o Fluxo 1 sobre os dados do Flyway: 20 pontos com atividade e medicação, streak 5 para 6 e subida de Prata para Ouro, alerta clínico por sintomas, bloqueio de check-in duplicado e bloqueio de usuário sem vínculo com o pet. Os testes rodam com `mvn test` e usam o mesmo H2 + Flyway da aplicação."
+
+### P9: Por que H2 e não Oracle? Dá para trocar?
+- **Resposta:** "Para a disciplina o foco é frontend, Flyway e Security, então usamos H2 em memória em modo Oracle para o avaliador rodar com um único comando. O driver `ojdbc11` já está no `pom.xml`: basta trocar `spring.datasource.*` e o dialeto no `application.properties`; as migrações do Flyway usam SQL compatível."
+
+### P10: Como a IA foi usada no processo?
+- **Resposta (adapte à sua realidade):** "Usei IA como par de programação: para revisar o código em busca de falhas (foi assim que identificamos a falta de validação de propriedade do pet e a regra de níveis duplicada), gerar o esqueleto dos testes com MockMvc e revisar o README. Toda sugestão foi lida, entendida e testada antes de entrar no projeto, e as decisões de arquitetura (Flyway como fonte única do esquema, regra de fidelidade na entidade, validação no service) são nossas."
+
+---
+
+## 🔎 3. Trechos que a banca pode pedir para explicar (saiba localizar rápido)
+| Arquivo | O que explicar |
+| :--- | :--- |
+| `config/SecurityConfig.java` | `filterChain`: ordem dos `requestMatchers`, `hasRole` x `ROLE_` prefixo, `formLogin`, `logout`, CSRF (exceção só para o console H2). |
+| `service/CustomUserDetailsService.java` | Converte `T_USUARIO` em `UserDetails`; a `SimpleGrantedAuthority` recebe `ROLE_TUTOR`/`ROLE_ADMIN`. |
+| `service/CheckinService.registrarCheckin` | Passo a passo do Fluxo 1 (propriedade, duplicidade, alerta, pontos, streak, badges, timeline). |
+| `model/RecompensaTutor.java` | Regra de níveis/desconto e do streak. |
+| `service/TriagemService.calcularEscoreLongevidadeEInsights` | Como o escore parte de 100 e cada fator desconta; limiares de risco. |
+| `db/migration/V1..V3` | Ordem das migrações, FKs, por que `ddl-auto=none`. |
+| `templates/fragments/layout.html` | `sec:authorize` na sidebar; fragmento `appShell` reutilizado por todas as telas. |
+| `src/test/...` | O que cada teste prova. |
