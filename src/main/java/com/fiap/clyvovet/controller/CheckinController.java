@@ -64,7 +64,7 @@ public class CheckinController {
         }
 
         try {
-            CheckinDiario salvo = checkinService.registrarCheckin(checkinDto);
+            CheckinDiario salvo = checkinService.registrarCheckin(checkinDto, auth.getName());
             if (Boolean.TRUE.equals(salvo.getAlertaGerado())) {
                 redirectAttributes.addFlashAttribute("warningMessage",
                         "Check-in registrado! Atenção: Detectamos sintomas ou apatia em " + salvo.getPet().getNome() +

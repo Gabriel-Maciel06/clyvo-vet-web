@@ -52,10 +52,10 @@ public class SecurityConfig {
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/h2-console/**").permitAll()
                 // Rotas públicas de login e erro
                 .requestMatchers("/login", "/erro", "/access-denied").permitAll()
-                // Rotas exclusivas de Veterinário / Admin
-                .requestMatchers("/admin/**", "/vet/**", "/triagem/avaliar/**", "/triagem/fila").hasRole("ADMIN")
-                // Rotas exclusivas ou prioritárias de Tutor
-                .requestMatchers("/tutor/**", "/checkin/**", "/pets/novo", "/pets/salvar").hasAnyRole("TUTOR", "ADMIN")
+                // Rotas exclusivas do Veterinário (ROLE_ADMIN): fila e avaliação clínica
+                .requestMatchers("/triagem/fila", "/triagem/avaliar/**").hasRole("ADMIN")
+                // Rotas exclusivas do Tutor (ROLE_TUTOR): cadastro de pets, check-in, recompensas e solicitação de triagem
+                .requestMatchers("/pets/novo", "/pets/salvar", "/pets/protocolo", "/checkin/**", "/triagem/solicitar").hasRole("TUTOR")
                 // Qualquer outra rota autenticada
                 .anyRequest().authenticated()
             )

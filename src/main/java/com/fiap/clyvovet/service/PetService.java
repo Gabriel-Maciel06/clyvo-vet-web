@@ -3,6 +3,8 @@ package com.fiap.clyvovet.service;
 import com.fiap.clyvovet.dto.PetDto;
 import com.fiap.clyvovet.model.*;
 import com.fiap.clyvovet.repository.*;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +43,27 @@ public class PetService {
                 .orElseThrow(() -> new IllegalArgumentException("Pet não encontrado com ID: " + petId));
     }
 
+    /**
+     * Garante que o pet pertence ao tutor logado. O veterinário (ROLE_ADMIN) pode acessar qualquer pet.
+     * Evita que um tutor acesse ou manipule pets de outros tutores alterando o ID na URL/formulário.
+     */
+    public Pet buscarPorIdAutorizado(Long petId, Authentication auth) {
+        Pet pet = buscarPorId(petId);
+        boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (!isAdmin) {
+            validarPropriedade(pet, auth.getName());
+        }
+        return pet;
+    }
+
+    public void validarPropriedade(Pet pet, String username) {
+        Tutor tutor = tutorRepository.findByUsuarioUsername(username)
+                .orElseThrow(() -> new AccessDeniedException("Usuário sem cadastro de tutor: " + username));
+        if (!pet.getTutor().getCpf().equals(tutor.getCpf())) {
+            throw new AccessDeniedException("O pet " + pet.getNome() + " não pertence ao tutor logado.");
+        }
+    }
+
     public List<Raca> listarRacas() {
         return racaRepository.findAll();
     }
@@ -57,9 +80,7 @@ public class PetService {
         boolean novo = false;
         if (dto.getId() != null) {
             pet = buscarPorId(dto.getId());
-            if (!pet.getTutor().getCpf().equals(tutor.getCpf())) {
-                throw new SecurityException("Acesso não autorizado ao pet informado.");
-            }
+            validarPropriedade(pet, username);
         } else {
             pet = new Pet();
             pet.setTutor(tutor);

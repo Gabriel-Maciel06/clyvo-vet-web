@@ -65,7 +65,7 @@ public class TriagemController {
         }
 
         try {
-            ConsultaTriagem triagem = triagemService.solicitarTriagem(dto);
+            ConsultaTriagem triagem = triagemService.solicitarTriagem(dto, auth.getName());
             redirectAttributes.addFlashAttribute("successMessage",
                     "Solicitação de triagem preventiva aberta com sucesso para " + triagem.getPet().getNome() +
                     "! O corpo clínico Clyvo Vet foi notificado.");

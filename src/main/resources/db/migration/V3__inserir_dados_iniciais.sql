@@ -25,7 +25,7 @@ INSERT INTO T_TUTOR (cpf, nome, telefone, email, usuario_id) VALUES
 
 -- 4. Recompensa Inicial do Tutor (Gamificação & Fidelidade)
 INSERT INTO T_RECOMPENSA_TUTOR (tutor_cpf, pontos_acumulados, streak_dias, ultimo_checkin, desconto_percentual, nivel_fidelidade) VALUES
-('123.456.789-00', 250, 5, CURRENT_DATE, 15, 'PRATA');
+('123.456.789-00', 230, 5, CURRENT_DATE - 1, 10, 'PRATA'); -- PRATA (>=100 pts); último check-in ontem: o próximo check-in de 20 pts sobe para OURO (250 pts) e streak 6
 
 -- 5. Clínicas Parceiras
 INSERT INTO T_CLINICA (nome_cnpj, telefone, cidade, estado, atendimento_24h) VALUES

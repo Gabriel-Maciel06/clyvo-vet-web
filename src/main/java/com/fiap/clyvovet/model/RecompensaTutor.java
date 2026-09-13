@@ -47,20 +47,46 @@ public class RecompensaTutor {
         atualizarNivelEDesconto();
     }
 
+    /**
+     * Regra ÚNICA de fidelidade (usada pelo CheckinService): o nível é definido pelo que
+     * for atingido primeiro, sequência de dias (streak) ou pontos acumulados.
+     *  DIAMANTE: streak >= 30 ou 500 pts -> 20% OFF
+     *  OURO:     streak >= 14 ou 250 pts -> 15% OFF
+     *  PRATA:    streak >= 7  ou 100 pts -> 10% OFF
+     *  BRONZE:   demais                  ->  5% OFF
+     */
     public void atualizarNivelEDesconto() {
-        if (pontosAcumulados >= 500) {
+        int pontos = this.pontosAcumulados == null ? 0 : this.pontosAcumulados;
+        int streak = this.streakDias == null ? 0 : this.streakDias;
+        if (streak >= 30 || pontos >= 500) {
             this.nivelFidelidade = "DIAMANTE";
-            this.descontoPercentual = 25;
-        } else if (pontosAcumulados >= 300) {
-            this.nivelFidelidade = "OURO";
             this.descontoPercentual = 20;
-        } else if (pontosAcumulados >= 150) {
-            this.nivelFidelidade = "PRATA";
+        } else if (streak >= 14 || pontos >= 250) {
+            this.nivelFidelidade = "OURO";
             this.descontoPercentual = 15;
+        } else if (streak >= 7 || pontos >= 100) {
+            this.nivelFidelidade = "PRATA";
+            this.descontoPercentual = 10;
         } else {
             this.nivelFidelidade = "BRONZE";
             this.descontoPercentual = 5;
         }
+    }
+
+    /** Atualiza a sequência de dias consecutivos com base na data do check-in anterior. */
+    public void registrarCheckinNaData(java.time.LocalDate data) {
+        if (this.ultimoCheckin == null) {
+            this.streakDias = 1;
+        } else {
+            long dias = java.time.temporal.ChronoUnit.DAYS.between(this.ultimoCheckin, data);
+            if (dias == 1) {
+                this.streakDias = (this.streakDias == null ? 0 : this.streakDias) + 1;
+            } else if (dias > 1) {
+                this.streakDias = 1; // sequência quebrada, reinicia
+            }
+            // dias == 0: segundo check-in no mesmo dia (outro pet) mantém o streak
+        }
+        this.ultimoCheckin = data;
     }
 
     public Long getId() { return id; }

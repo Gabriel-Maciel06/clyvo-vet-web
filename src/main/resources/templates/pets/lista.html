@@ -11,7 +11,7 @@
                     <h2 class="fw-bold text-dark mb-0">Pets Acompanhados</h2>
                     <p class="text-muted small">Gerencie o perfil, acesse a carteirinha digital, calcule a idade humana e veja o histórico preventivo.</p>
                 </div>
-                <a th:href="@{/pets/novo}" class="btn btn-clyvo rounded-pill px-4">
+                <a th:href="@{/pets/novo}" class="btn btn-clyvo rounded-pill px-4" sec:authorize="hasRole('TUTOR')">
                     <i class="bi bi-plus-lg me-1"></i> Cadastrar Pet
                 </a>
             </div>

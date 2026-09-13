@@ -81,9 +81,16 @@ public class PetController {
         }
     }
 
+    /** Atalho da sidebar "Protocolo de Longevidade": abre o primeiro pet do tutor logado. */
+    @GetMapping("/protocolo")
+    public String protocoloLongevidade(Authentication auth) {
+        List<Pet> pets = petService.listarPorTutor(auth.getName());
+        return pets.isEmpty() ? "redirect:/pets/novo" : "redirect:/pets/" + pets.get(0).getId();
+    }
+
     @GetMapping("/{id}")
-    public String detalhesPet(@PathVariable("id") Long petId, Model model) {
-        Pet pet = petService.buscarPorId(petId);
+    public String detalhesPet(@PathVariable("id") Long petId, Authentication auth, Model model) {
+        Pet pet = petService.buscarPorIdAutorizado(petId, auth); // tutor só vê os próprios pets
         List<CheckinDiario> checkins = checkinService.listarHistoricoPorPet(petId);
         List<BadgeConquista> badges = checkinService.listarBadgesPorPet(petId);
         List<ConsultaTriagem> triagens = triagemService.listarPorPet(petId);

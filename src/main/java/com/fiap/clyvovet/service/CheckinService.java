@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,17 +19,20 @@ public class CheckinService {
     private final RecompensaTutorRepository recompensaRepository;
     private final BadgeConquistaRepository badgeRepository;
     private final HistoricoClinicoRepository historicoClinicoRepository;
+    private final PetService petService;
 
     public CheckinService(CheckinDiarioRepository checkinRepository,
                           PetRepository petRepository,
                           RecompensaTutorRepository recompensaRepository,
                           BadgeConquistaRepository badgeRepository,
-                          HistoricoClinicoRepository historicoClinicoRepository) {
+                          HistoricoClinicoRepository historicoClinicoRepository,
+                          PetService petService) {
         this.checkinRepository = checkinRepository;
         this.petRepository = petRepository;
         this.recompensaRepository = recompensaRepository;
         this.badgeRepository = badgeRepository;
         this.historicoClinicoRepository = historicoClinicoRepository;
+        this.petService = petService;
     }
 
     public List<CheckinDiario> listarHistoricoPorPet(Long petId) {
@@ -121,10 +123,16 @@ public class CheckinService {
         return galeria;
     }
 
+    /**
+     * FLUXO 1 - Check-in diário: valida propriedade do pet, evita duplicidade no dia,
+     * detecta alerta clínico, pontua, atualiza streak/nível do tutor, desbloqueia badges
+     * e registra o evento na linha do tempo clínica.
+     */
     @Transactional
-    public CheckinDiario registrarCheckin(CheckinDto dto) {
+    public CheckinDiario registrarCheckin(CheckinDto dto, String usernameTutor) {
         Pet pet = petRepository.findById(dto.getPetId())
                 .orElseThrow(() -> new IllegalArgumentException("Pet não encontrado: " + dto.getPetId()));
+        petService.validarPropriedade(pet, usernameTutor);
 
         LocalDate hoje = LocalDate.now();
 
@@ -163,7 +171,7 @@ public class CheckinService {
         atualizarGamificacaoTutor(pet.getTutor().getCpf(), hoje, pontosGanhos);
 
         // 5. Avaliar e Destravar Badges para o Pet
-        avaliarBadges(pet);
+        avaliarBadges(pet, dto.getMinutosAtividade());
 
         // 6. Registrar Evento na Linha do Tempo Clínica
         String desc = String.format("Check-in diário realizado: Humor %s, Dieta %s, Atividade %d min.",
@@ -184,45 +192,21 @@ public class CheckinService {
 
     private void atualizarGamificacaoTutor(String tutorCpf, LocalDate hoje, int pontosGanhos) {
         RecompensaTutor recompensa = obterOuCriarRecompensa(tutorCpf);
-
-        // Streak
-        if (recompensa.getUltimoCheckin() != null) {
-            long diasDiferenca = ChronoUnit.DAYS.between(recompensa.getUltimoCheckin(), hoje);
-            if (diasDiferenca == 1) {
-                recompensa.setStreakDias(recompensa.getStreakDias() + 1);
-            } else if (diasDiferenca > 1) {
-                recompensa.setStreakDias(1); // Perdeu o streak, reinicia
-            }
-        } else {
-            recompensa.setStreakDias(1);
-        }
-
-        recompensa.setUltimoCheckin(hoje);
-        recompensa.setPontosAcumulados(recompensa.getPontosAcumulados() + pontosGanhos);
-
-        // Cálculo de desconto e Nível
-        int streak = recompensa.getStreakDias();
-        int pontos = recompensa.getPontosAcumulados();
-
-        if (streak >= 30 || pontos >= 500) {
-            recompensa.setNivelFidelidade("DIAMANTE");
-            recompensa.setDescontoPercentual(20);
-        } else if (streak >= 14 || pontos >= 250) {
-            recompensa.setNivelFidelidade("OURO");
-            recompensa.setDescontoPercentual(15);
-        } else if (streak >= 7 || pontos >= 100) {
-            recompensa.setNivelFidelidade("PRATA");
-            recompensa.setDescontoPercentual(10);
-        } else {
-            recompensa.setNivelFidelidade("BRONZE");
-            recompensa.setDescontoPercentual(5);
-        }
-
+        recompensa.registrarCheckinNaData(hoje);   // streak
+        recompensa.adicionarPontos(pontosGanhos);  // pontos + nível + desconto (regra na entidade)
         recompensaRepository.save(recompensa);
     }
 
-    private void avaliarBadges(Pet pet) {
+    private void avaliarBadges(Pet pet, Integer minutosAtividade) {
         long totalCheckins = checkinRepository.countByPetId(pet.getId());
+
+        // Badge 0: Atleta (45+ minutos de atividade em um único check-in)
+        if (minutosAtividade != null && minutosAtividade >= 45 && !badgeRepository.existsByPetIdAndCodigoBadge(pet.getId(), "VIDA_ATIVA")) {
+            badgeRepository.save(new BadgeConquista(
+                    null, pet, "VIDA_ATIVA", "Atleta Canino", "bi-lightning-charge-fill",
+                    "Mais de 45 minutos diários de caminhadas e atividades físicas.", LocalDate.now()
+            ));
+        }
 
         // Badge 1: Primeiro Passo
         if (totalCheckins >= 1 && !badgeRepository.existsByPetIdAndCodigoBadge(pet.getId(), "PRIMEIRO_PASSO")) {

@@ -21,17 +21,20 @@ public class TriagemService {
     private final CheckinDiarioRepository checkinRepository;
     private final HistoricoClinicoRepository historicoClinicoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final PetService petService;
 
     public TriagemService(ConsultaTriagemRepository triagemRepository,
                           PetRepository petRepository,
                           CheckinDiarioRepository checkinRepository,
                           HistoricoClinicoRepository historicoClinicoRepository,
-                          UsuarioRepository usuarioRepository) {
+                          UsuarioRepository usuarioRepository,
+                          PetService petService) {
         this.triagemRepository = triagemRepository;
         this.petRepository = petRepository;
         this.checkinRepository = checkinRepository;
         this.historicoClinicoRepository = historicoClinicoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.petService = petService;
     }
 
     public List<ConsultaTriagem> listarTodas() {
@@ -51,10 +54,12 @@ public class TriagemService {
                 .orElseThrow(() -> new IllegalArgumentException("Triagem não encontrada com ID: " + id));
     }
 
+    /** FLUXO 2 (etapa do tutor): abre a solicitação de triagem para um pet do próprio tutor. */
     @Transactional
-    public ConsultaTriagem solicitarTriagem(SolicitacaoTriagemDto dto) {
+    public ConsultaTriagem solicitarTriagem(SolicitacaoTriagemDto dto, String usernameTutor) {
         Pet pet = petRepository.findById(dto.getPetId())
                 .orElseThrow(() -> new IllegalArgumentException("Pet não encontrado: " + dto.getPetId()));
+        petService.validarPropriedade(pet, usernameTutor);
 
         ConsultaTriagem triagem = new ConsultaTriagem();
         triagem.setPet(pet);
